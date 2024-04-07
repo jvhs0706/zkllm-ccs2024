@@ -8,7 +8,7 @@
 using namespace std;
 
 typedef blstrs__fp__Fp Fp_t;
-const uint G1NumThread = 64;
+const uint G1NumThread = 256;
 const uint G1AffineSharedMemorySize = 2 * sizeof(G1Affine_t) * G1NumThread; 
 const uint G1JacobianSharedMemorySize = 2 * sizeof(G1Jacobian_t) * G1NumThread;
 
