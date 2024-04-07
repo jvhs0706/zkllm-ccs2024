@@ -1,5 +1,5 @@
 # Compilers
-NVCC := nvcc
+NVCC := $(CUDA_PATH)/bin/nvcc
 
 # Include and library paths
 INCLUDES := -I$(CUDA_PATH)/include
@@ -13,7 +13,7 @@ CU_SRCS := bls12-381.cu commitment.cu fr-tensor.cu g1-tensor.cu proof.cu zkrelu.
 CU_OBJS := $(CU_SRCS:.cu=.o)
 CPP_SRCS := $(wildcard *.cpp)
 CPP_OBJS := $(CPP_SRCS:.cpp=.o)
-TARGETS := test zkattn-test linear-test
+TARGETS := test
 TARGET_OBJS := $(TARGETS:=.o)
 
 # Pattern rule for CUDA source files

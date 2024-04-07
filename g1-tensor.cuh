@@ -77,10 +77,10 @@ class G1TensorJacobian;
 
 class G1TensorAffine: public G1Tensor
 {
-    protected:
-    G1Affine_t* gpu_data;
-
     public: 
+
+    G1Affine_t* gpu_data;
+    
     G1TensorAffine(const G1TensorAffine&);
 
     G1TensorAffine(uint size);
@@ -102,17 +102,17 @@ class G1TensorAffine: public G1Tensor
 
     G1TensorJacobian& operator*(const FrTensor&);
 
-    friend class G1TensorJacobian;
+    // friend class G1TensorJacobian;
 };
 
-class Commitment;
+// class Commitment;
 
 class G1TensorJacobian: public G1Tensor
 {
-    protected:
+    public: 
+    
     G1Jacobian_t* gpu_data;
 
-    public: 
     G1TensorJacobian(const G1TensorJacobian&);
 
     G1TensorJacobian(uint size);
@@ -169,10 +169,12 @@ class G1TensorJacobian: public G1Tensor
 
     G1Jacobian_t operator()(const vector<Fr_t>& u) const;
 
-    friend G1Jacobian_t G1_me(const G1TensorJacobian& t, vector<Fr_t>::const_iterator begin, vector<Fr_t>::const_iterator end);
+    G1TensorJacobian rowwise_sum(uint nrow, uint ncol) const;
 
-    friend class G1TensorAffine;
-    friend class Commitment;
+    // friend G1Jacobian_t G1_me(const G1TensorJacobian& t, vector<Fr_t>::const_iterator begin, vector<Fr_t>::const_iterator end);
+
+    // friend class G1TensorAffine;
+    // friend class Commitment;
 };
 
 // Implement G1Affine
@@ -219,5 +221,8 @@ KERNEL void G1_jacobian_elementwise_mul_broadcast(GLOBAL G1Jacobian_t* arr_g1, G
 
 
 KERNEL void G1_me_step(GLOBAL G1Jacobian_t *arr_in, GLOBAL G1Jacobian_t *arr_out, Fr_t x, uint in_size, uint out_size);
+
+// Given arr of shape of nrow * ncol_in, reduce to nrow * ncol_out, where ncol_out = (ncol + 1) >> 1
+KERNEL void G1Jacobian_rowwise_sum_step(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol_in, uint ncol_out);
 
 #endif

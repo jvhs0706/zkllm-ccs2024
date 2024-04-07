@@ -15,9 +15,9 @@ class Commitment: public G1TensorJacobian
     using G1TensorJacobian::operator*;
     using G1TensorJacobian::operator*=;
 
-    G1Jacobian_t commit(const FrTensor& t) const;
-    G1Jacobian_t commit_int (const FrTensor& t) const;
-    G1Jacobian_t commit_int_multi(const vector<FrTensor>& t) const;
+    G1TensorJacobian commit(const FrTensor& t, bool speedup) const;
+    G1TensorJacobian commit_int (const FrTensor& t) const;
+    G1TensorJacobian commit_int_multi(const vector<FrTensor>& t) const;
 
     Fr_t open(const FrTensor& t, const G1TensorJacobian& c, const vector<Fr_t>& u) const;
 

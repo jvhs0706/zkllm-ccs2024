@@ -489,3 +489,46 @@ G1Jacobian_t G1TensorJacobian::operator()(const vector<Fr_t>& u) const
     if (size <= (1 << (log_dim - 1)) || size > (1 << log_dim)) throw std::runtime_error("Incompatible dimensions");
     return G1_me(*this, u.begin(), u.end());
 }
+
+KERNEL void G1Jacobian_rowwise_sum_step(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol_in, uint ncol_out)
+{
+    auto gid = GET_GLOBAL_ID();
+    auto row_id = gid / ncol_out;
+    auto col_id = gid % ncol_out;
+
+    if (row_id < nrow && col_id < ncol_out) {
+        // need to consider the case when ncol_in is odd
+        if (2 * col_id + 1 == ncol_in) {
+            arr_out[row_id * ncol_out + col_id] = arr_in[row_id * ncol_in + 2 * col_id];
+        } else {
+            arr_out[row_id * ncol_out + col_id] = blstrs__g1__G1Affine_add(arr_in[row_id * ncol_in + 2 * col_id], arr_in[row_id * ncol_in + 2 * col_id + 1]);
+        }
+    }
+}
+
+G1TensorJacobian G1TensorJacobian::rowwise_sum(uint nrow, uint ncol) const
+{
+    if (size != nrow * ncol) throw std::runtime_error("Incompatible dimensions");
+
+    G1TensorJacobian out(nrow);
+
+    G1TensorJacobian temp0 (*this);
+    G1TensorJacobian temp1 (nrow * ((ncol + 1) / 2));
+    
+    auto ptr0 = temp0.gpu_data;
+    auto ptr1 = temp1.gpu_data;
+
+    while (ncol > 1) {
+        auto ncol_out = (ncol + 1) >> 1;
+        G1Jacobian_rowwise_sum_step<<<(nrow * ncol_out + G1NumThread - 1) / G1NumThread, G1NumThread>>>(ptr0, ptr1, nrow, ncol, ncol_out);
+        cudaDeviceSynchronize();
+        // swap ptr0, ptr1
+        auto temp_ptr = ptr0;
+        ptr0 = ptr1;
+        ptr1 = temp_ptr;
+        ncol = ncol_out;
+    }
+
+    cudaMemcpy(out.gpu_data, ptr0, nrow * sizeof(G1Jacobian_t), cudaMemcpyDeviceToDevice);
+    return out;
+}
