@@ -4,42 +4,53 @@
 #include "timer.hpp"
 
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
 int main(int argc, char **argv) {
     uint nrow = stoi(argv[1]);
     uint ncol = stoi(argv[2]);
+    uint nbit = stoi(argv[3]);
+
+    // make sure that nrow and ncol are both power of 2
+
+    // assert((nrow & (nrow - 1)) == 0);
+    // assert((ncol & (ncol - 1)) == 0);
 
     auto generators = Commitment::random(ncol);
 
-    // cout << generators(0) << endl;
-    // cout << generators(generators.size - 1) << endl;
-    FrTensor data = FrTensor::random(nrow * ncol);
-
-    // warm up
-    generators.commit(data, true);
-    generators.commit(data, false);
-
+    FrTensor data = FrTensor::random_int(nrow * ncol, nbit);
 
     Timer timer;
     timer.start();
-    auto c = generators.commit(data, true);
-    timer.stop();
-    cout << "Commitment time: " << timer.getTotalTime() << endl;
-    timer.reset();
-    
-    timer.start();
-    auto c_ = generators.commit(data, false);
+    auto c = generators.commit(data);
     timer.stop();
     cout << "Commitment time: " << timer.getTotalTime() << endl;
     timer.reset();
 
-    cout << c(0) << c_(0) << (c - c_)(0) << endl;
-    cout << c(c.size >> 1) << c_(c.size >> 1) << (c - c_)(c.size >> 1) << endl;
-    cout << c((c.size >> 1) + 1) << c_((c.size >> 1) + 1) << (c - c_)((c.size >> 1) + 1) << endl;
-    cout << c(c.size - 2) << c_(c.size - 2) << (c - c_)(c.size - 2) << endl;
-    cout << c(c.size - 1) << c_(c.size - 1) << (c - c_)(c.size - 1) << endl;
+    timer.start();
+    auto c_ = generators.commit_int(data);
+    timer.stop();
+    cout << "Commitment time: " << timer.getTotalTime() << endl;
+    timer.reset();
+
+    auto u = random_vec(ceilLog2(nrow) + ceilLog2(ncol));
+    std::vector<Fr_t> u0(u.end() - ceilLog2(nrow), u.end());
+    std::vector<Fr_t> u1(u.begin(), u.end() - ceilLog2(nrow));
+
+    cout << data.multi_dim_me({u0, u1}, {nrow, ncol}) << endl;
+    timer.start();
+    cout << generators.open(data, c, u) << endl;
+    timer.stop();
+    cout << "Open time: " << timer.getTotalTime() << endl;
+    timer.reset();
+
+    timer.start();
+    cout << generators.open(data, c_, u) << endl;
+    timer.stop();
+    cout << "Open time: " << timer.getTotalTime() << endl;
+    timer.reset();
 
     return 0;
 }
