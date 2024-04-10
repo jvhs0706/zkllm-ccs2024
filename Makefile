@@ -1,9 +1,9 @@
 # Compilers
-NVCC := $(CUDA_PATH)/bin/nvcc
+NVCC := $(CONDA_PREFIX)/bin/nvcc
 
 # Include and library paths
-INCLUDES := -I$(CUDA_PATH)/include
-LIBS := -L$(CUDA_PATH)/lib64 -lcudart
+INCLUDES := -I$(CONDA_PREFIX)/include
+LIBS := -L$(CONDA_PREFIX)/lib64 -lcudart
 
 # NVCC compiler flags
 NVCC_FLAGS := -arch=sm_86 -std=c++17

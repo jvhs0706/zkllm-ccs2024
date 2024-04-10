@@ -16,7 +16,7 @@ typedef blstrs__scalar__Scalar Fr_t;
 typedef blstrs__g1__G1Affine_affine G1Affine_t;
 typedef blstrs__g1__G1Affine_jacobian G1Jacobian_t;
 
-const uint FrNumThread = 256;
+const uint FrNumThread = 1024;
 const uint FrSharedMemorySize = 2 * sizeof(Fr_t) * FrNumThread; 
 
 ostream& operator<<(ostream& os, const Fr_t& x);
