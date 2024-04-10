@@ -3,7 +3,7 @@ NVCC := $(CONDA_PREFIX)/bin/nvcc
 
 # Include and library paths
 INCLUDES := -I$(CONDA_PREFIX)/include
-LIBS := -L$(CONDA_PREFIX)/lib64 -lcudart
+LIBS := -L$(CONDA_PREFIX)/lib
 
 # NVCC compiler flags
 NVCC_FLAGS := -arch=sm_86 -std=c++17
