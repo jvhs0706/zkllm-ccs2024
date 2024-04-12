@@ -105,6 +105,7 @@ class G1TensorAffine: public G1Tensor
     // friend class G1TensorJacobian;
 };
 
+const int G1RowwiseSumTileWidth = 16;
 // class Commitment;
 
 class G1TensorJacobian: public G1Tensor
@@ -223,6 +224,8 @@ KERNEL void G1_jacobian_elementwise_mul_broadcast(GLOBAL G1Jacobian_t* arr_g1, G
 KERNEL void G1_me_step(GLOBAL G1Jacobian_t *arr_in, GLOBAL G1Jacobian_t *arr_out, Fr_t x, uint in_size, uint out_size);
 
 // Given arr of shape of nrow * ncol_in, reduce to nrow * ncol_out, where ncol_out = (ncol + 1) >> 1
-KERNEL void G1Jacobian_rowwise_sum_step(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol_in, uint ncol_out);
+// KERNEL void G1Jacobian_rowwise_sum_step(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol_in, uint ncol_out);
+
+KERNEL void G1Jacobian_rowwise_sum_reduction(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol, uint ncol_out);
 
 #endif

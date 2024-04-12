@@ -39,6 +39,10 @@ int main(int argc, char **argv) {
     std::vector<Fr_t> u0(u.end() - ceilLog2(nrow), u.end());
     std::vector<Fr_t> u1(u.begin(), u.end() - ceilLog2(nrow));
 
+    cout << (c - c_)(0) << endl;
+    cout << (c - c_)(c.size - 1) << endl;
+    cout << (c - c_)(u0) << endl;
+
     cout << data.multi_dim_me({u0, u1}, {nrow, ncol}) << endl;
     timer.start();
     cout << generators.open(data, c, u) << endl;

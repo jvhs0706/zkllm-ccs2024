@@ -7,17 +7,17 @@ Commitment Commitment::random(uint size)
     return out; 
 }
 
-KERNEL void com_sum_row_kernel(const G1Jacobian_t* arr, G1Jacobian_t* arr_out, uint m, uint n) {
-    auto row = GET_GLOBAL_ID();
-    if (row < m) {
-        G1Jacobian_t rowSum = arr[row * n];
-        for (uint i = 1; i < n; ++ i) {
-            rowSum = blstrs__g1__G1Affine_add(rowSum, arr[row * n + i]);
-        }
-        arr_out[row] = rowSum;
-    }
+// KERNEL void com_sum_row_kernel(const G1Jacobian_t* arr, G1Jacobian_t* arr_out, uint m, uint n) {
+//     auto row = GET_GLOBAL_ID();
+//     if (row < m) {
+//         G1Jacobian_t rowSum = arr[row * n];
+//         for (uint i = 1; i < n; ++ i) {
+//             rowSum = blstrs__g1__G1Affine_add(rowSum, arr[row * n + i]);
+//         }
+//         arr_out[row] = rowSum;
+//     }
     
-}
+// }
 
 G1TensorJacobian Commitment::commit(const FrTensor& t) const
 {

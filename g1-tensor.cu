@@ -490,45 +490,113 @@ G1Jacobian_t G1TensorJacobian::operator()(const vector<Fr_t>& u) const
     return G1_me(*this, u.begin(), u.end());
 }
 
-KERNEL void G1Jacobian_rowwise_sum_step(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol_in, uint ncol_out)
-{
-    auto gid = GET_GLOBAL_ID();
-    auto row_id = gid / ncol_out;
-    auto col_id = gid % ncol_out;
+// OLD VERSION
+// KERNEL void G1Jacobian_rowwise_sum_step(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol_in, uint ncol_out)
+// {
+//     auto gid = GET_GLOBAL_ID();
+//     auto row_id = gid / ncol_out;
+//     auto col_id = gid % ncol_out;
 
-    if (row_id < nrow && col_id < ncol_out) {
-        // need to consider the case when ncol_in is odd
-        if (2 * col_id + 1 == ncol_in) {
-            arr_out[row_id * ncol_out + col_id] = arr_in[row_id * ncol_in + 2 * col_id];
-        } else {
-            arr_out[row_id * ncol_out + col_id] = blstrs__g1__G1Affine_add(arr_in[row_id * ncol_in + 2 * col_id], arr_in[row_id * ncol_in + 2 * col_id + 1]);
+//     if (row_id < nrow && col_id < ncol_out) {
+//         // need to consider the case when ncol_in is odd
+//         if (2 * col_id + 1 == ncol_in) {
+//             arr_out[row_id * ncol_out + col_id] = arr_in[row_id * ncol_in + 2 * col_id];
+//         } else {
+//             arr_out[row_id * ncol_out + col_id] = blstrs__g1__G1Affine_add(arr_in[row_id * ncol_in + 2 * col_id], arr_in[row_id * ncol_in + 2 * col_id + 1]);
+//         }
+//     }
+// }
+
+// blockdim.x == blockdim.y == TILE_WIDTH
+// ncol_out == (ncol + blockdim.x - 1) / blockdim.x
+KERNEL void G1Jacobian_rowwise_sum_reduction(const G1Jacobian_t* arr_in, G1Jacobian_t* arr_out, uint nrow, uint ncol, uint ncol_out)
+{
+    __shared__ G1Jacobian_t rwsum_data[TILE_WIDTH][TILE_WIDTH];
+
+    auto row_id = blockIdx.y * TILE_WIDTH + threadIdx.y;
+    auto row_tid = threadIdx.y;
+
+    auto col_id = blockIdx.x * TILE_WIDTH + threadIdx.x;
+    auto col_tid = threadIdx.x;
+
+    // Load input into shared memory
+    rwsum_data[row_tid][col_tid] = (row_id < nrow && col_id < ncol) ? arr_in[row_id * ncol + col_id] : blstrs__g1__G1Affine_ZERO;
+    __syncthreads();
+
+    for (unsigned int s = blockDim.x >> 1; s > 0; s >>= 1) {
+        if (col_tid < s && col_id + s < ncol) {
+            rwsum_data[row_tid][col_tid] = blstrs__g1__G1Affine_add(rwsum_data[row_tid][col_tid], rwsum_data[row_tid][col_tid + s]);
         }
+        __syncthreads();
+    }
+    
+    // Write the result for this block to output
+    if (col_tid == 0 && row_id < nrow){
+        arr_out[row_id * ncol_out + blockIdx.x] = rwsum_data[row_tid][0];
     }
 }
+
+// OLD VERSION
+// G1TensorJacobian G1TensorJacobian::rowwise_sum(uint nrow, uint ncol) const
+// {
+//     if (size != nrow * ncol) throw std::runtime_error("Incompatible dimensions");
+
+//     G1TensorJacobian out(nrow);
+
+//     G1TensorJacobian temp0 (*this);
+//     G1TensorJacobian temp1 (nrow * ((ncol + 1) / 2));
+    
+//     auto ptr0 = temp0.gpu_data;
+//     auto ptr1 = temp1.gpu_data;
+
+//     while (ncol > 1) {
+//         auto ncol_out = (ncol + 1) >> 1;
+//         G1Jacobian_rowwise_sum_step<<<(nrow * ncol_out + G1NumThread - 1) / G1NumThread, G1NumThread>>>(ptr0, ptr1, nrow, ncol, ncol_out);
+//         cudaDeviceSynchronize();
+//         // swap ptr0, ptr1
+//         auto temp_ptr = ptr0;
+//         ptr0 = ptr1;
+//         ptr1 = temp_ptr;
+//         ncol = ncol_out;
+//     }
+
+//     cudaMemcpy(out.gpu_data, ptr0, nrow * sizeof(G1Jacobian_t), cudaMemcpyDeviceToDevice);
+//     return out;
+// }
+
+
 
 G1TensorJacobian G1TensorJacobian::rowwise_sum(uint nrow, uint ncol) const
 {
     if (size != nrow * ncol) throw std::runtime_error("Incompatible dimensions");
+    G1Jacobian_t *ptr_input, *ptr_output;
+    uint curNumCol = ncol;
+    uint nextNumCol = (curNumCol + G1RowwiseSumTileWidth - 1) / G1RowwiseSumTileWidth;
+    cudaMalloc((void**)&ptr_input, nrow * curNumCol * sizeof(G1Jacobian_t));
+    cudaMalloc((void**)&ptr_output, nrow * nextNumCol * sizeof(G1Jacobian_t));
+    cudaMemcpy(ptr_input, gpu_data, nrow * ncol * sizeof(G1Jacobian_t), cudaMemcpyDeviceToDevice);
+    uint gridDimY = (nrow + G1RowwiseSumTileWidth - 1) / G1RowwiseSumTileWidth;
 
-    G1TensorJacobian out(nrow);
-
-    G1TensorJacobian temp0 (*this);
-    G1TensorJacobian temp1 (nrow * ((ncol + 1) / 2));
-    
-    auto ptr0 = temp0.gpu_data;
-    auto ptr1 = temp1.gpu_data;
-
-    while (ncol > 1) {
-        auto ncol_out = (ncol + 1) >> 1;
-        G1Jacobian_rowwise_sum_step<<<(nrow * ncol_out + G1NumThread - 1) / G1NumThread, G1NumThread>>>(ptr0, ptr1, nrow, ncol, ncol_out);
+    while (curNumCol > 1)
+    {
+        // cout << "Current size = " << nrow << " x " << curNumCol << endl;
+        uint gridDimX = (curNumCol + G1RowwiseSumTileWidth - 1) / G1RowwiseSumTileWidth;
+        G1Jacobian_rowwise_sum_reduction<<<dim3(gridDimX, gridDimY), dim3(G1RowwiseSumTileWidth, G1RowwiseSumTileWidth)>>>(ptr_input, ptr_output, nrow, curNumCol, nextNumCol);
         cudaDeviceSynchronize();
-        // swap ptr0, ptr1
-        auto temp_ptr = ptr0;
-        ptr0 = ptr1;
-        ptr1 = temp_ptr;
-        ncol = ncol_out;
+        // Swap pointers. Use the output from this step as the input for the next step.
+        G1Jacobian_t *temp = ptr_input;
+        ptr_input = ptr_output;
+        ptr_output = temp;
+
+        curNumCol = nextNumCol;
+        nextNumCol = (curNumCol + G1RowwiseSumTileWidth - 1) / G1RowwiseSumTileWidth;
     }
 
-    cudaMemcpy(out.gpu_data, ptr0, nrow * sizeof(G1Jacobian_t), cudaMemcpyDeviceToDevice);
+    G1TensorJacobian out(nrow);
+    cudaMemcpy(out.gpu_data, ptr_input, nrow * sizeof(G1Jacobian_t), cudaMemcpyDeviceToDevice);
+
+    cudaFree(ptr_input);
+    cudaFree(ptr_output);
+
     return out;
 }
