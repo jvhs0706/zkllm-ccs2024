@@ -1,6 +1,6 @@
 # zkLLM: Zero-Knowledge Proofs for Machine Learning
 
-Welcome to the official CUDA implementation of the paper *zkLLM: Zero-Knowledge Proofs for Machine Learning* (camera-ready version under preparation) published at [ACM CCS 2024](https://www.sigsac.org/ccs/CCS2024/home.html), authored by [Haochen Sun](https://cs.uwaterloo.ca/~h299sun/), Jason Li, and Hongyang Zhang.
+Welcome to the official CUDA implementation of the paper *zkLLM: Zero-Knowledge Proofs for Machine Learning* (camera-ready version under preparation) published at [ACM CCS 2024](https://www.sigsac.org/ccs/CCS2024/home.html), authored by [Haochen Sun](https://cs.uwaterloo.ca/~h299sun/), Jason Li, and [Hongyang Zhang](https://hongyanz.github.io/) from the University of Waterloo.
 
 ## Open-Sourcing Progress
 
@@ -27,7 +27,8 @@ You may need to manually set the CUDA architecture used. For example, if you are
 
 ## Contacts
 
-For any questions, comments, or discussions on potential collaborations (e.g., further development of the codebase for industrial-level applications), please feel free to [email Haochen Sun](mailto:haochen.sun@uwaterloo.ca).
+For any questions, comments, or discussions regarding potential collaborations (e.g., further development of the codebase for industrial-level applications), please feel free to [email](mailto:haochen.sun@uwaterloo.ca) or [direct message](sip:h299sun@uwaterloo.ca) Haochen Sun.
+
 
 ## Acknowledgements
 
