@@ -27,7 +27,7 @@ You may need to manually set the CUDA architecture used. For example, if you are
 
 ## Contacts
 
-For any questions, comments, or discussions regarding potential collaborations (e.g., further development of the codebase for industrial-level applications), please feel free to [email](mailto:haochen.sun@uwaterloo.ca) or [direct message](sip:h299sun@uwaterloo.ca) Haochen Sun.
+For any questions, comments, or discussions regarding potential collaborations (e.g., further development of the codebase for industrial-level applications), please feel free to [email](mailto:haochen.sun@uwaterloo.ca) Haochen Sun.
 
 
 ## Acknowledgements
