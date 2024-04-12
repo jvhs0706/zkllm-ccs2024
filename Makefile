@@ -5,8 +5,11 @@ NVCC := $(CONDA_PREFIX)/bin/nvcc
 INCLUDES := -I$(CONDA_PREFIX)/include
 LIBS := -L$(CONDA_PREFIX)/lib
 
+# get compute capability from retrieved value
+ARCH := sm_86
+
 # NVCC compiler flags
-NVCC_FLAGS := -arch=sm_86 -std=c++17
+NVCC_FLAGS := -arch=$(ARCH) -std=c++17
 
 # Source and object files
 CU_SRCS := bls12-381.cu commitment.cu fr-tensor.cu g1-tensor.cu proof.cu zkrelu.cu zkfc.cu tlookup.cu polynomial.cu zksoftmax.cu
