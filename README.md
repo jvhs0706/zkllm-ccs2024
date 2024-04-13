@@ -21,7 +21,7 @@ conda activate zkllm-env
 conda install cuda -c nvidia/label/cuda-12.1.0
 ```
 
-Once installed, load your model in `test.cu` and assemble the proof (refer to the header files for documentation). We are actively working on automating this process.
+Once installed, load your model in `main.cu` and assemble the proof (refer to the header files for documentation). We are actively working on automating this process.
 
 You may need to manually set the CUDA architecture used. For example, if you are using an NVIDIA RTX A6000, set `ARCH` to `sm_86` in `Makefile`. Then run `make` to build the project. Modify the `Makefile` if necessary.
 
