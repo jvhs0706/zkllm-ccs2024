@@ -178,12 +178,12 @@ FrTensor::~FrTensor()
     gpu_data = nullptr;
 }
 
-FrTensor::save(const string& filename) const
+void FrTensor::save(const string& filename) const
 {
     savebin(filename, gpu_data, sizeof(Fr_t) * size);
 }
 
-FrTensor::FrTensor(const string& filename): size(findsize(filename)), gpu_data(nullptr)
+FrTensor::FrTensor(const string& filename): size(findsize(filename) / sizeof(Fr_t)), gpu_data(nullptr)
 {
     cudaMalloc((void **)&gpu_data, sizeof(Fr_t) * size);
     loadbin(filename, gpu_data, sizeof(Fr_t) * size);
