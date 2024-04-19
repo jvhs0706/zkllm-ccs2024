@@ -16,9 +16,15 @@ Our open-sourcing process includes:
 zkLLM is implemented in CUDA. We recommend using CUDA 12.1.0, installed within a `conda` virtual environment. To set up the environment:
 
 ```bash
-conda create -n zkllm-env 
+conda create -n zkllm-env python=3.11
 conda activate zkllm-env 
 conda install cuda -c nvidia/label/cuda-12.1.0
+```
+
+Also, to load the LLMs and run the experiments, you will need `torch`, `transformers` and `datasets`:
+
+```bash
+pip install torch torchvision torchaudio transformers datasets
 ```
 
 Once installed, load your model in `main.cu` and assemble the proof (refer to the header files for documentation). We are actively working on automating this process.

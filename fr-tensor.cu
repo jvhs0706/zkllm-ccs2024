@@ -1,4 +1,5 @@
 #include "fr-tensor.cuh"
+#include "ioutils.cuh"
 
 using namespace std;
 
@@ -175,6 +176,17 @@ FrTensor::~FrTensor()
 {
     cudaFree(gpu_data);
     gpu_data = nullptr;
+}
+
+void FrTensor::save(const string& filename) const
+{
+    savebin(filename, gpu_data, sizeof(Fr_t) * size);
+}
+
+FrTensor::FrTensor(const string& filename): size(findsize(filename) / sizeof(Fr_t)), gpu_data(nullptr)
+{
+    cudaMalloc((void **)&gpu_data, sizeof(Fr_t) * size);
+    loadbin(filename, gpu_data, sizeof(Fr_t) * size);
 }
 
 Fr_t FrTensor::operator()(uint idx) const

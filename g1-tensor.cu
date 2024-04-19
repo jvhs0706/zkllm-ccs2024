@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "fr-tensor.cuh"
 #include "g1-tensor.cuh"
+#include "ioutils.cuh"
 
 using namespace std;
 
@@ -83,6 +84,17 @@ G1TensorAffine::~G1TensorAffine()
     gpu_data = nullptr;
 }
 
+void G1TensorAffine::save(const string& filename) const
+{
+    savebin(filename, gpu_data, size * sizeof(G1Affine_t));
+}
+
+G1TensorAffine::G1TensorAffine(const string& filename): G1Tensor(findsize(filename) / sizeof(G1Affine_t)), gpu_data(nullptr)
+{
+    cudaMalloc((void **)&gpu_data, size * sizeof(G1Affine_t));
+    loadbin(filename, gpu_data, size * sizeof(G1Affine_t));
+}
+
 G1Affine_t G1TensorAffine::operator()(uint idx) const
 {
     G1Affine_t out;
@@ -157,6 +169,17 @@ G1TensorJacobian::~G1TensorJacobian()
 {
     cudaFree(gpu_data);
     gpu_data = nullptr;
+}
+
+void G1TensorJacobian::save(const string& filename) const
+{
+    savebin(filename, gpu_data, size * sizeof(G1Jacobian_t));
+}
+
+G1TensorJacobian::G1TensorJacobian(const string& filename): G1Tensor(findsize(filename) / sizeof(G1Jacobian_t)), gpu_data(nullptr)
+{
+    cudaMalloc((void **)&gpu_data, size * sizeof(G1Jacobian_t));
+    loadbin(filename, gpu_data, size * sizeof(G1Jacobian_t));
 }
 
 G1Jacobian_t G1TensorJacobian::operator()(uint idx) const

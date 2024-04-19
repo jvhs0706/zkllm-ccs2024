@@ -86,7 +86,11 @@ class FrTensor
 
     FrTensor(const FrTensor& t);
 
+    FrTensor(const string& filename);
+
     ~FrTensor();
+
+    void save(const string& filename) const;
 
     Fr_t operator()(uint idx) const;
 

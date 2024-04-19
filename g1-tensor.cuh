@@ -89,7 +89,11 @@ class G1TensorAffine: public G1Tensor
 
     G1TensorAffine(uint size, const G1Affine_t* cpu_data);
 
+    G1TensorAffine(const string& filename);
+
     ~G1TensorAffine();
+
+    void save(const string& filename) const;
 
 	G1Affine_t operator()(uint idx) const;
 	// {
@@ -124,7 +128,11 @@ class G1TensorJacobian: public G1Tensor
 
     G1TensorJacobian(const G1TensorAffine& affine_tensor);
 
+    G1TensorJacobian(const string& filename);
+
     ~G1TensorJacobian();
+
+    void save(const string& filename) const;
 
 	G1Jacobian_t operator()(uint) const;
 
