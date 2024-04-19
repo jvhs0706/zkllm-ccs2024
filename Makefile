@@ -16,7 +16,7 @@ CU_SRCS := bls12-381.cu commitment.cu fr-tensor.cu g1-tensor.cu proof.cu zkrelu.
 CU_OBJS := $(CU_SRCS:.cu=.o)
 CPP_SRCS := $(wildcard *.cpp)
 CPP_OBJS := $(CPP_SRCS:.cpp=.o)
-TARGETS := test
+TARGETS := main
 TARGET_OBJS := $(TARGETS:=.o)
 
 # Pattern rule for CUDA source files
