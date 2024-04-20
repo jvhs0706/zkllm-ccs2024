@@ -189,6 +189,18 @@ FrTensor::FrTensor(const string& filename): size(findsize(filename) / sizeof(Fr_
     loadbin(filename, gpu_data, sizeof(Fr_t) * size);
 }
 
+FrTensor FrTensor::from_int_bin(const string& filename)
+{
+    auto size = findsize(filename) / sizeof(int);
+    FrTensor out(size);
+    int* int_gpu_data;
+    cudaMalloc((void **)&int_gpu_data, sizeof(int) * size);
+    loadbin(filename, int_gpu_data, sizeof(int) * size);
+    int_to_scalar_kernel<<<(size+FrNumThread-1)/FrNumThread,FrNumThread>>>(int_gpu_data, out.gpu_data, size);
+    cudaFree(int_gpu_data);
+    return out;
+}
+
 Fr_t FrTensor::operator()(uint idx) const
 {
     Fr_t out;

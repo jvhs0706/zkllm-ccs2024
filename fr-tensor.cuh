@@ -88,6 +88,8 @@ class FrTensor
 
     FrTensor(const string& filename);
 
+    static FrTensor from_int_bin(const string& filename);
+
     ~FrTensor();
 
     void save(const string& filename) const;
