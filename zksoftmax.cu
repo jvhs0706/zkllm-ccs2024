@@ -230,9 +230,9 @@ FrTensor zkAttn::compute(const FrTensor& Q, const FrTensor& K, const FrTensor& V
     if (V.size != n * d) throw std::invalid_argument("V must be n * d");
     
     sm_in = FrTensor::matmul(Q, K.transpose(n, d), m, d, n);
-    cout << sm_in(0) << " " << sm_in(sm_in.size -1) << endl;
+    // cout << sm_in(0) << " " << sm_in(sm_in.size -1) << endl;
     sm_out = zkSoftmax::compute(sm_in, sm_shift, sm_in_shifted, sm_in_segments, sm_out_segments, sm_m_segments);
-    cout << sm_out(0) << " " << sm_out(sm_out.size -1) << endl;
+    // cout << sm_out(0) << " " << sm_out(sm_out.size -1) << endl;
     return FrTensor::matmul(sm_out, V, m, n, d);
 }
 

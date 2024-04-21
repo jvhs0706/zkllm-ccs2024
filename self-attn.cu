@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     Rescaling k_rescale(1 << 16);
     Rescaling v_rescale(1 << 16);
     Rescaling o_rescale(1 << 16);
+    Rescaling y_rescale(1 << 16);
 
     FrTensor input = FrTensor::from_int_bin(input_file_name);
     cout << input.size << endl;
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
     auto V = v_layer(input);
     auto V_ = v_rescale(V);
 
-    zkAttn attn(1L << 16, 1L << 16, {1 << 16, 1 << 16, 1 << 16}, 1, 0, {1.0 * (1L << 4), 1.0 * (1L << 12)}, seq_len, seq_len, embed_dim, 1 << 12);
+    zkAttn attn(1L << 16, 1L << 16, {1 << 16, 1 << 16, 1 << 16}, 1, 0, {1.0 * (1L << 5), 1.0 * (1L << 11)}, seq_len, seq_len, embed_dim, 1 << 12);
 
     // CACHES
     FrTensor sm_in(seq_len * seq_len), sm_out(seq_len * seq_len), sm_shift(seq_len), sm_in_shifted(seq_len * seq_len);
@@ -83,8 +84,10 @@ int main(int argc, char *argv[])
 
 
     auto Y = attn.compute(Q_, K_, V_, sm_in, sm_out, sm_shift, sm_in_shifted, sm_in_segments, sm_out_segments, sm_m_segments);
+    auto Y_ = y_rescale(Y);
+    auto O = o_layer(Y_);
+    auto O_ = o_rescale(O);
 
-    cout << Y(0) << endl;
-    cout << Y(Y.size - 1) << endl;
+    cout << O_(0) << " " << O_(O_.size - 1) << endl;
     return 0;
 }
