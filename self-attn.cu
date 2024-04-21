@@ -3,6 +3,7 @@
 #include "fr-tensor.cuh"
 #include "proof.cuh"
 #include "commitment.cuh"
+#include "rescaling.cuh"
 #include <string>
 
 struct Weight {
@@ -56,26 +57,32 @@ int main(int argc, char *argv[])
     zkFC v_layer(embed_dim, embed_dim, v_proj.weight);
     zkFC o_layer(embed_dim, embed_dim, o_proj.weight);
 
+    Rescaling q_rescale(1 << 16);
+    Rescaling k_rescale(1 << 16);
+    Rescaling v_rescale(1 << 16);
+    Rescaling o_rescale(1 << 16);
+
     FrTensor input = FrTensor::from_int_bin(input_file_name);
     cout << input.size << endl;
     auto Q = q_layer(input);
+    auto Q_ = q_rescale(Q);
     auto K = k_layer(input);
+    auto K_ = k_rescale(K);
     auto V = v_layer(input);
+    auto V_ = v_rescale(V);
 
-    cout << Q.size << " " << K.size << " " << V.size << endl;
-
-    zkAttn attn(1L << 32, 1L << 32, {1 << 16, 1 << 16, 1 << 16, 1 << 16, 1 << 16}, 3, 0, {1.0 * (1L << 5), 1.0 * (1L << 11)}, seq_len, seq_len, embed_dim, 1 << 12);
+    zkAttn attn(1L << 16, 1L << 16, {1 << 16, 1 << 16, 1 << 16}, 1, 0, {1.0 * (1L << 4), 1.0 * (1L << 12)}, seq_len, seq_len, embed_dim, 1 << 12);
 
     // CACHES
     FrTensor sm_in(seq_len * seq_len), sm_out(seq_len * seq_len), sm_shift(seq_len), sm_in_shifted(seq_len * seq_len);
     vector<FrTensor> sm_in_segments, sm_out_segments, sm_m_segments;
 
-    cout << Q(0) << endl;
-    cout << K(0) << endl;
-    cout << V(0) << endl;
+    cout << Q(0) << " " << Q_(0) << endl;
+    cout << K(0) << " " << K_(0) << endl;
+    cout << V(0) << " " << V_(0) << endl;
 
 
-    auto Y = attn.compute(Q, K, V, sm_in, sm_out, sm_shift, sm_in_shifted, sm_in_segments, sm_out_segments, sm_m_segments);
+    auto Y = attn.compute(Q_, K_, V_, sm_in, sm_out, sm_shift, sm_in_shifted, sm_in_segments, sm_out_segments, sm_m_segments);
 
     cout << Y(0) << endl;
     cout << Y(Y.size - 1) << endl;

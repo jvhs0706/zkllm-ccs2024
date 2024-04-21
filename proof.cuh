@@ -10,7 +10,12 @@
 #include <vector>
 #include <random>
 
-
+struct Claim {
+    Fr_t claim;
+    FrTensor* X_ptr;
+    std::vector<std::vector<Fr_t>> u;
+    std::vector<uint> dims;
+};
 
 
 
