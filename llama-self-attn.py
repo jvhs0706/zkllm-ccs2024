@@ -15,7 +15,10 @@ import fileio_utils
 
 
 if __name__ == '__main__':
-    os.system('make self-attn')
+    compilation_error = os.system('make self-attn')
+    if compilation_error:
+        print("Error compiling self-attn")
+        exit(1)
     args = parser.parse_args()
     model_card = f"meta-llama/Llama-2-{args.model_size}b-hf"
 

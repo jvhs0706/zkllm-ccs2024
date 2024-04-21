@@ -183,6 +183,23 @@ void FrTensor::save(const string& filename) const
     savebin(filename, gpu_data, sizeof(Fr_t) * size);
 }
 
+KERNEL void scalar_to_int_kernel(const Fr_t* scalar_ptr, int* int_ptr, uint n)
+{
+    const uint gid = GET_GLOBAL_ID();
+    if (gid >= n) return;
+    int_ptr[gid] = scalar_to_int(scalar_ptr[gid]);
+}
+
+void FrTensor::save_int(const string& filename) const
+{
+    int* int_gpu_data;
+    cudaMalloc((void **)&int_gpu_data, sizeof(int) * size);
+    scalar_to_int_kernel<<<(size+FrNumThread-1)/FrNumThread,FrNumThread>>>(gpu_data, int_gpu_data, size);
+    cudaDeviceSynchronize();
+    savebin(filename, int_gpu_data, sizeof(int) * size);
+    cudaFree(int_gpu_data);
+}
+
 FrTensor::FrTensor(const string& filename): size(findsize(filename) / sizeof(Fr_t)), gpu_data(nullptr)
 {
     cudaMalloc((void **)&gpu_data, sizeof(Fr_t) * size);

@@ -58,33 +58,33 @@ FrTensor zkFC::operator()(const FrTensor& X) const { // X.size is batch_size * i
 }
 
 
-// Need to be moved later!!!
-// DEVICE Fr_t float_to_Fr(float x)
-// {
-//     x = x * (1 << 16);
-//     float abs_x = round(abs(x));
-//     float sign_x = copysign(1.0f, x);
+vector<Claim> zkFC::prove(const FrTensor& X, const FrTensor& Y) const
+{
+    if (has_bias) throw std::runtime_error("Cleaned-up version not implemented for zkFC with bias. Use zkFCStacked instead.");
+    uint batchSize = X.size / inputSize;
+    auto u_batch = random_vec(ceilLog2(batchSize));
+    auto u_input = random_vec(ceilLog2(inputSize));
+    auto u_output = random_vec(ceilLog2(outputSize));
 
-//     bool negative = (sign_x < 0);
-//     uint rounded_abs = static_cast<uint>(abs_x);
+    
 
-//     if (negative){
-//         return blstrs__scalar__Scalar_sub({0, 0, 0, 0, 0, 0, 0, 0}, {rounded_abs, 0, 0, 0, 0, 0, 0, 0});
-//     }
-//     else {
-//         return {rounded_abs, 0, 0, 0, 0, 0, 0, 0};
-//     }
-// }
+    auto claim = Y.multi_dim_me({u_batch, u_output}, {batchSize, outputSize});
 
-// KERNEL void float_to_Fr_kernel(float* fs, Fr_t* frs, uint fs_num_window, uint frs_num_window, uint fs_window_size, uint frs_window_size)
-// {
-//     int tid = blockIdx.x * blockDim.x + threadIdx.x;
-//     uint dim0 = tid / frs_window_size;
-//     uint dim1 = tid % frs_window_size;
-//     if (tid >= frs_num_window * frs_window_size) return;
-//     if (dim0 < fs_num_window && dim1 < fs_window_size) frs[dim0 * frs_window_size + dim1] = float_to_Fr(fs[dim0 * fs_window_size + dim1]);
-//     else frs[tid] = {0, 0, 0, 0, 0, 0, 0, 0};
-// }
+    auto X_reduced = X.partial_me(u_batch, batchSize, inputSize);
+    auto W_reduced = weights.partial_me(u_output, outputSize, 1); // Y_reduced: num * inputSize
+    vector<Polynomial> proof;
+    auto final_claim = zkip(claim, X_reduced, W_reduced, u_input, proof);
+    auto claim_X = X.multi_dim_me({u_batch, u_input}, {batchSize, inputSize});
+    auto claim_W = weights.multi_dim_me({u_input, u_output}, {inputSize, outputSize});
+    if (claim_X * claim_W != final_claim) {
+        throw std::runtime_error("Claim does not match");
+    }
+    vector<Claim> claims;
+    //Claim output_claim = {claim_W, &weights, vector<vector<Fr_t>>({u_input, u_output}), vector<uint>({inputSize, outputSize})};
+    claims.push_back({claim_W, vector<vector<Fr_t>>({u_input, u_output}), vector<uint>({inputSize, outputSize})});
+    return claims;
+
+}
 
 
 // zk inner product

@@ -6,31 +6,34 @@
 #include "zkfc.cuh"
 #include "zksoftmax.cuh"
 #include "timer.hpp"
+#include "rescaling.cuh"
 
 #include <iostream>
 #include <cassert>
 
 using namespace std;
 
+void check_cuda_error(cudaError_t err) {
+    if (err != cudaSuccess) {
+        cout << "CUDA error: " << cudaGetErrorString(err) << endl;
+        exit(1);
+    }
+}
+
 int main(int argc, char **argv) {
     uint size = std::stoi(argv[1]);
+    uint nbit = std::stoi(argv[2]);
+    uint nbit_rescale = std::stoi(argv[3]);
 
-    auto x = FrTensor::random(size);
-    x.save("x.bin");
-    FrTensor y("x.bin");
+    auto x = FrTensor::random_int(size, nbit);
+    Rescaling rs(1 << nbit_rescale);
+    // cout << rs.tl_rem.table << endl;
 
-    cout << x.size << " " << y.size << endl;
+    auto x_ = rs(x);
+    check_cuda_error(cudaGetLastError());
+    // cout << x_ << endl;
 
-    // check x == y
-    auto u = random_vec(ceilLog2(size));
-    cout << x(u) << endl;
-    cout << y(u) << endl;
-
-    auto com = Commitment::random(size);
-    com.save("com.bin");
-    Commitment com_("com.bin");
-    cout << com.size << " " << com_.size << endl;
-    cout << (com - com_)(u) << endl;
+    rs.prove(x, x_);
 
     return 0;
 }

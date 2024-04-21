@@ -13,7 +13,7 @@ public:
     uint scaling_factor;
     tLookupRange tl_rem; // table for remainder
     Rescaling decomp(const FrTensor& X, FrTensor& rem);
-    FrTensor *rem_tensor_ptr, *m_tensor_ptr;
+    FrTensor *rem_tensor_ptr;
 
     Rescaling(uint scaling_factor);
     FrTensor operator()(const FrTensor& X);

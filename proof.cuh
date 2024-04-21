@@ -12,12 +12,17 @@
 
 struct Claim {
     Fr_t claim;
-    FrTensor* X_ptr;
     std::vector<std::vector<Fr_t>> u;
     std::vector<uint> dims;
 };
 
+void verifyWeightClaim(const Weight& w, const Claim& c);
 
+// struct Weight {
+//     Commitment generator;
+//     FrTensor weight;
+//     G1TensorJacobian com;
+// };
 
 KERNEL void Fr_ip_sc_step(GLOBAL Fr_t *a, GLOBAL Fr_t *b, GLOBAL Fr_t *out0, GLOBAL Fr_t *out1, GLOBAL Fr_t *out2, uint in_size, uint out_size);
 
