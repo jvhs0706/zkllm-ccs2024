@@ -29,6 +29,8 @@ public:
     FrTensor operator()(const FrTensor& X) const;
     // void prove(const FrTensor& X, const FrTensor& Z, Commitment& generators) const;
 
+    vector<Claim> prove(const FrTensor& X, const FrTensor& Y) const;
+
     static zkFC from_float_gpu_ptr (uint input_size, uint output_size, unsigned long scaling_factor, float* weight_ptr, float* bias_ptr);
     static zkFC from_float_gpu_ptr (uint input_size, uint output_size, unsigned long scaling_factor, float* weight_ptr);
     static FrTensor load_float_gpu_input(uint batch_size, uint input_size, unsigned long scaling_factor, float* input_ptr);

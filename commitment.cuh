@@ -25,6 +25,13 @@ class Commitment: public G1TensorJacobian
     static Fr_t me_open(const FrTensor& t, const Commitment& generators, vector<Fr_t>::const_iterator begin, vector<Fr_t>::const_iterator end, vector<G1Jacobian_t>& proof);
 };
 
+struct Weight {
+    Commitment generator;
+    FrTensor weight;
+    G1TensorJacobian com;
+};
+
+Weight create_weight(string generator_filename, string weight_filename, string com_filename);
 // KERNEL void sum_axis_n_optimized(GLOBAL G1Jacobian_t* arr, GLOBAL G1Jacobian_t* arr_out, uint n, uint m);
 
 

@@ -44,6 +44,10 @@ class zkAttn : public zkSoftmax {
         const vector<Fr_t>& v_sm, const Fr_t& r_seg, const Fr_t& alpha_seg, const Fr_t& beta_seg, 
         const vector<Fr_t>& v_matmul_in,
         vector<Polynomial>& proof);
+
+    vector<Claim> prove(const FrTensor& Q, const FrTensor& K, const FrTensor& V, const FrTensor& out,
+        const FrTensor& sm_out, const FrTensor& sm_in, const FrTensor& sm_shift, const FrTensor& sm_in_shifted,
+        const vector<FrTensor>& sm_in_segments, const vector<FrTensor>& sm_out_segments, const vector<FrTensor>& sm_m_segments);
 };
 
 class zkAttnStacked : public zkAttn {
@@ -58,6 +62,10 @@ class zkAttnStacked : public zkAttn {
         const vector<Fr_t>& v_sm, const Fr_t& r_seg, const Fr_t& alpha_seg, const Fr_t& beta_seg, 
         const vector<Fr_t>& v_matmul_in_num, const vector<Fr_t>& v_matmul_in,
         vector<Polynomial>& proof );
+
+    vector<Claim> prove(const FrTensor& Q, const FrTensor& K, const FrTensor& V, const FrTensor& out,
+        const FrTensor& sm_out, const FrTensor& sm_in, const FrTensor& sm_shift, const FrTensor& sm_in_shifted,
+        const vector<FrTensor>& sm_in_segments, const vector<FrTensor>& sm_out_segments, const vector<FrTensor>& sm_m_segments);
 
     protected:
     const uint num;

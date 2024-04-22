@@ -1,5 +1,12 @@
 #include "proof.cuh"
 
+void verifyWeightClaim(const Weight& w, const Claim& c)
+{
+    vector<Fr_t> u_cat = concatenate(vector<vector<Fr_t>>({c.u[1], c.u[0]}));
+    auto opening = w.generator.open(w.weight, w.com, u_cat);
+    if (opening != c.claim) throw std::runtime_error("verifyWeightClaim: opening != c.claim");
+    cout << "Opening complete" << endl;
+}
 
 KERNEL void Fr_ip_sc_step(GLOBAL Fr_t *a, GLOBAL Fr_t *b, GLOBAL Fr_t *out0, GLOBAL Fr_t *out1, GLOBAL Fr_t *out2, uint in_size, uint out_size)
 {

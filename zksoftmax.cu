@@ -230,8 +230,29 @@ FrTensor zkAttn::compute(const FrTensor& Q, const FrTensor& K, const FrTensor& V
     if (V.size != n * d) throw std::invalid_argument("V must be n * d");
     
     sm_in = FrTensor::matmul(Q, K.transpose(n, d), m, d, n);
+    // cout << sm_in(0) << " " << sm_in(sm_in.size -1) << endl;
     sm_out = zkSoftmax::compute(sm_in, sm_shift, sm_in_shifted, sm_in_segments, sm_out_segments, sm_m_segments);
+    // cout << sm_out(0) << " " << sm_out(sm_out.size -1) << endl;
     return FrTensor::matmul(sm_out, V, m, n, d);
+}
+
+vector<Claim> zkAttn::prove(const FrTensor& Q, const FrTensor& K, const FrTensor& V, const FrTensor& out,
+        const FrTensor& sm_out, const FrTensor& sm_in, const FrTensor& sm_shift, const FrTensor& sm_in_shifted,
+        const vector<FrTensor>& sm_in_segments, const vector<FrTensor>& sm_out_segments, const vector<FrTensor>& sm_m_segments)
+{
+    auto u_matmul_out = random_vec(ceilLog2(m));
+    auto v_matmul_out = random_vec(ceilLog2(n));
+    auto w_matmul_out = random_vec(ceilLog2(d));
+
+    auto v_sm = random_vec(ceilLog2(m) + ceilLog2(n));
+    auto temp_rand = random_vec(3);
+    auto &r_seg = temp_rand[0], &alpha_seg = temp_rand[1], &beta_seg = temp_rand[2];
+    auto v_matmul_in = random_vec(ceilLog2(d));
+    vector<Polynomial> proof;
+    this -> prove(Q, K, V, out, sm_out, sm_in, sm_shift, sm_in_shifted, sm_in_segments, sm_out_segments, sm_m_segments, 
+        u_matmul_out, v_matmul_out, w_matmul_out, v_sm, r_seg, alpha_seg, beta_seg, v_matmul_in, proof);
+    cout << "zkAttn proof complete." << endl;
+    return {};
 }
 
 Fr_t zkAttn::prove(const FrTensor& Q, const FrTensor& K, const FrTensor& V, const FrTensor& out,
