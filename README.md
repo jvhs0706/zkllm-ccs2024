@@ -30,7 +30,7 @@ pip install torch torchvision torchaudio transformers datasets
 
 The followings is the example of LLaMa-2. The details for other models may vary.
 
-First generate the public parameters and commit to the models:
+First, download the models from Hugging Face using `download-models.py`, and generate the public parameters and commit to the models:
 
 ```bash
 model_size=7 # 7 or 13 (billions of parameters)
@@ -55,7 +55,7 @@ python llama-ffn.py --input_file $ffn_input_bin --output_file $output_bin $model
 
 We are actively working on further automating this process.
 
-You may need to manually set the CUDA architecture used. For example, if you are using an NVIDIA RTX A6000, set `ARCH` to `sm_86` in `Makefile`. Then run `make` to build the project. Modify the `Makefile` if necessary.
+You may need to manually set the CUDA architecture used. For example, if you are using an NVIDIA RTX A6000, set `ARCH` to `sm_86` in `Makefile`. Modify the `Makefile` if necessary.
 
 ## Contacts
 
