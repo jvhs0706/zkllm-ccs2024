@@ -55,7 +55,7 @@ python llama-ffn.py --input_file $ffn_input_bin --output_file $output_bin $model
 
 We are actively working on further automating this process.
 
-You may need to manually set the CUDA architecture used. For example, if you are using an NVIDIA RTX A6000, set `ARCH` to `sm_86` in `Makefile`. Then run `make` to build the project. Modify the `Makefile` if necessary.
+You may need to manually set the CUDA architecture used. For example, if you are using an NVIDIA RTX A6000, set `ARCH` to `sm_86` in `Makefile`. Modify the `Makefile` if necessary.
 
 ## Contacts
 
