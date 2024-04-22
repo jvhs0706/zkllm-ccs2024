@@ -16,7 +16,7 @@ CU_SRCS := bls12-381.cu ioutils.cu commitment.cu fr-tensor.cu g1-tensor.cu proof
 CU_OBJS := $(CU_SRCS:.cu=.o)
 CPP_SRCS := $(wildcard *.cpp)
 CPP_OBJS := $(CPP_SRCS:.cpp=.o)
-TARGETS := main test ppgen commit-param self-attn
+TARGETS := main test ppgen commit-param self-attn ffn
 TARGET_OBJS := $(TARGETS:=.o)
 
 # Pattern rule for CUDA source files

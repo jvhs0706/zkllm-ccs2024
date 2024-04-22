@@ -31,6 +31,7 @@ struct Weight {
     G1TensorJacobian com;
 };
 
+Weight create_weight(string generator_filename, string weight_filename, string com_filename);
 // KERNEL void sum_axis_n_optimized(GLOBAL G1Jacobian_t* arr, GLOBAL G1Jacobian_t* arr_out, uint n, uint m);
 
 

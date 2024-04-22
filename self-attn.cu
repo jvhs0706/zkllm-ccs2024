@@ -6,16 +6,8 @@
 #include "rescaling.cuh"
 #include <string>
 
-Weight create_weight(string generator_filename, string weight_filename, string com_filename) {
-    Commitment generator(generator_filename);
-    FrTensor weight = FrTensor::from_int_bin(weight_filename);
-    G1TensorJacobian com = generator.commit_int(weight);
-    return {generator, weight, com};
-}
-
 int main(int argc, char *argv[])
 {
-
     string input_file_name = argv[1];
     int seq_len = std::stoi(argv[2]);
     int embed_dim = std::stoi(argv[3]);

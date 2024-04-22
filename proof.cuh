@@ -16,6 +16,8 @@ struct Claim {
     std::vector<uint> dims;
 };
 
+struct Weight;
+
 void verifyWeightClaim(const Weight& w, const Claim& c);
 
 // struct Weight {

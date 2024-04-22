@@ -140,3 +140,10 @@ Fr_t Commitment::open(const FrTensor& t, const G1TensorJacobian& com, const vect
     vector<G1Jacobian_t> proof;
     return me_open(t.partial_me(u_out, t.size / com.size), *this, u_in.begin(), u_in.end(), proof);
 }
+
+Weight create_weight(string generator_filename, string weight_filename, string com_filename) {
+    Commitment generator(generator_filename);
+    FrTensor weight = FrTensor::from_int_bin(weight_filename);
+    G1TensorJacobian com = generator.commit_int(weight);
+    return {generator, weight, com};
+}

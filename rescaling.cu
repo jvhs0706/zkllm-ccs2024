@@ -51,7 +51,7 @@ vector<Claim> Rescaling::prove(const FrTensor& X, const FrTensor& X_)
     auto rand_temp = random_vec(2);
     vector<Polynomial> proof;
 
-    auto& rem = *rem_tensor_ptr;
+    auto rem = rem_tensor_ptr -> pad({rem_tensor_ptr -> size});
     auto m = tl_rem.prep(rem);
 
     // cout << X << endl;
