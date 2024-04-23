@@ -3,7 +3,8 @@
 void verifyWeightClaim(const Weight& w, const Claim& c)
 {
     vector<Fr_t> u_cat = concatenate(vector<vector<Fr_t>>({c.u[1], c.u[0]}));
-    auto opening = w.generator.open(w.weight, w.com, u_cat);
+    auto w_padded = w.weight.pad({w.in_dim, w.out_dim});
+    auto opening = w.generator.open(w_padded, w.com, u_cat);
     if (opening != c.claim) throw std::runtime_error("verifyWeightClaim: opening != c.claim");
     cout << "Opening complete" << endl;
 }

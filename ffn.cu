@@ -24,19 +24,25 @@ int main(int argc, char *argv[])
     auto up_proj = create_weight(
         workdir + "/mlp.up_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-mlp.up_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-mlp.up_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-mlp.up_proj.weight-commitment.bin",
+        embed_dim,
+        hidden_dim
     );
 
     auto gate_proj = create_weight(
         workdir + "/mlp.gate_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-mlp.gate_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-mlp.gate_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-mlp.gate_proj.weight-commitment.bin",
+        embed_dim,
+        hidden_dim
     );
 
     auto down_proj = create_weight(
         workdir + "/mlp.down_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-mlp.down_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-mlp.down_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-mlp.down_proj.weight-commitment.bin",
+        hidden_dim,
+        embed_dim
     );
 
     zkFC up_layer(embed_dim, hidden_dim, up_proj.weight);

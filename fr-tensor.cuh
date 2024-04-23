@@ -16,7 +16,7 @@ typedef blstrs__scalar__Scalar Fr_t;
 typedef blstrs__g1__G1Affine_affine G1Affine_t;
 typedef blstrs__g1__G1Affine_jacobian G1Jacobian_t;
 
-const uint FrNumThread = 1024;
+const uint FrNumThread = 256;
 const uint FrSharedMemorySize = 2 * sizeof(Fr_t) * FrNumThread; 
 
 ostream& operator<<(ostream& os, const Fr_t& x);
@@ -143,7 +143,7 @@ class FrTensor
 
     Fr_t multi_dim_me(const vector<vector<Fr_t>>& us, const vector<uint>& shape) const;
 
-    FrTensor pad(const vector<uint>& shape, const Fr_t& pad_val = {0, 0, 0, 0, 0, 0, 0, 0});
+    FrTensor pad(const vector<uint>& shape, const Fr_t& pad_val = {0, 0, 0, 0, 0, 0, 0, 0}) const;
 
     FrTensor transpose(uint M, uint N) const;
     static FrTensor matmul(const FrTensor& x, const FrTensor& y, uint M, uint N, uint P);

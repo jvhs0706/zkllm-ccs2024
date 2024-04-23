@@ -108,7 +108,7 @@ KERNEL void me_open_step(GLOBAL Fr_t* scalars, GLOBAL G1Jacobian_t* generators, 
 
 Fr_t Commitment::me_open(const FrTensor& t, const Commitment& generators, vector<Fr_t>::const_iterator begin, vector<Fr_t>::const_iterator end, vector<G1Jacobian_t>& proof)
 {
-    if (t.size != generators.size) throw std::runtime_error("Commitment::me_open - Incompatible dimensions");
+    if (t.size != generators.size) throw std::runtime_error("Commitment::me_open - Incompatible dimensions "+ std::to_string(t.size) + " " + std::to_string(generators.size));
     if (begin >= end)
     {
         proof.push_back(generators(0));
@@ -141,9 +141,9 @@ Fr_t Commitment::open(const FrTensor& t, const G1TensorJacobian& com, const vect
     return me_open(t.partial_me(u_out, t.size / com.size), *this, u_in.begin(), u_in.end(), proof);
 }
 
-Weight create_weight(string generator_filename, string weight_filename, string com_filename) {
+Weight create_weight(string generator_filename, string weight_filename, string com_filename, uint in_dim, uint out_dim) {
     Commitment generator(generator_filename);
     FrTensor weight = FrTensor::from_int_bin(weight_filename);
-    G1TensorJacobian com = generator.commit_int(weight);
-    return {generator, weight, com};
+    G1TensorJacobian com(com_filename);
+    return {generator, weight, com, in_dim, out_dim};
 }

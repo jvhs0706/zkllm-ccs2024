@@ -18,25 +18,33 @@ int main(int argc, char *argv[])
     auto q_proj = create_weight(
         workdir + "/self_attn.q_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-self_attn.q_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-self_attn.q_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-self_attn.q_proj.weight-commitment.bin",
+        embed_dim,
+        embed_dim
     );
 
     auto k_proj = create_weight(
         workdir + "/self_attn.k_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-self_attn.k_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-self_attn.k_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-self_attn.k_proj.weight-commitment.bin",
+        embed_dim,
+        embed_dim
     );
 
     auto v_proj = create_weight(
         workdir + "/self_attn.v_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-self_attn.v_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-self_attn.v_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-self_attn.v_proj.weight-commitment.bin",
+        embed_dim,
+        embed_dim
     );
 
     auto o_proj = create_weight(
         workdir + "/self_attn.o_proj.weight-pp.bin",
         workdir + "/" + layer_prefix + "-self_attn.o_proj.weight-int.bin",
-        workdir + "/" + layer_prefix + "-self_attn.o_proj.weight-commitment.bin"
+        workdir + "/" + layer_prefix + "-self_attn.o_proj.weight-commitment.bin",
+        embed_dim,
+        embed_dim
     );
 
     zkFC q_layer(embed_dim, embed_dim, q_proj.weight);

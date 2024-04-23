@@ -777,7 +777,7 @@ KERNEL void FrTensor_pad_kernel(GLOBAL Fr_t* arr_in, GLOBAL Fr_t* arr_out, uint 
     else arr_out[gid] = arr_in[gid0 * last_dim_in + gid1];
 }
 
-FrTensor FrTensor::pad(const vector<uint>& shape, const Fr_t& pad_val)
+FrTensor FrTensor::pad(const vector<uint>& shape, const Fr_t& pad_val) const
 {
     uint cum_shape = 1;
     for (auto& s: shape) cum_shape *= s;

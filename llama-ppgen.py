@@ -3,7 +3,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='LLaMa-2 PPGen')
 parser.add_argument('model_size', type=int, choices = [7, 13], help='The size of the model to use. Default is 13')
-parser.add_argumetn('--log_off_factor', type=int, default=0, help='The log offset factor to use. Default is 0')
+parser.add_argument('--log_off_factor', type=int, default=5, help='The log offset factor to use. Default is 5')
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 

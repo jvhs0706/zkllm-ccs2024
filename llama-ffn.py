@@ -5,10 +5,10 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description='LLaMa-2 Self-Attention')
 parser.add_argument('model_size', type=int, choices = [7, 13], help='The size of the model to use. Default is 13')
-parser.add_argument('layer', type=int, help='The layer to use for self-attn')
-parser.add_argument('seq_len', type=int, help='The sequence length to use for self-attn')
-parser.add_argument('--input_file', required = True, type=str, help='The input file to use for self-attn')
-parser.add_argument('--output_file', default = 'llama-self-attn-output.bin', type=str, help='The output file to use for self-attn')
+parser.add_argument('layer', type=int, help='The layer to use for ffn')
+parser.add_argument('seq_len', type=int, help='The sequence length to use for ffn')
+parser.add_argument('--input_file', required = True, type=str, help='The input file to use for ffn')
+parser.add_argument('--output_file', default = 'llama-ffn-output.bin', type=str, help='The output file to use for ffn')
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import fileio_utils

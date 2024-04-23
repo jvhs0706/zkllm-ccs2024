@@ -37,7 +37,7 @@ if __name__ == '__main__':
             int_bin_path = f"./zkllm-workdir/Llama-2-{args.model_size}b/layer-{i}-{j}-int.bin"
             commitment_path = f"./zkllm-workdir/Llama-2-{args.model_size}b/layer-{i}-{j}-commitment.bin"
             save_weight_int(w_out, int_bin_path)
-            if w_out.shape == 2:
+            if len(w_out.shape) == 2:
                 os.system(f'./commit-param {pp_path} {int_bin_path} {commitment_path} {w_out.shape[0]} {w_out.shape[1]}')
             else:
                 os.system(f'./commit-param {pp_path} {int_bin_path} {commitment_path} {w_out.shape[0]} 1')
