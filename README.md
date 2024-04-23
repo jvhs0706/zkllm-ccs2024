@@ -28,7 +28,7 @@ Also, to load the LLMs and run the experiments, you will need `torch`, `transfor
 pip install torch torchvision torchaudio transformers datasets
 ```
 
-## An Example for LLaMa-2
+## An Example with LLaMa-2
 
 The followings is the example of LLaMa-2. The details for other models may vary.
 
