@@ -51,7 +51,7 @@ model_size=7 # 7 or 13 (billions of parameters)
 layer_number=0 # start with 0 and then go to deeper layers
 sequence_length=2048 # the sequence length to prove
 
-python llama-ffn.py --input_file $input_bin --output_file $self_attn_output_bin $model_size $layer_number $seqence_length
+python llama-self-attn.py --input_file $input_bin --output_file $self_attn_output_bin $model_size $layer_number $seqence_length
 python llama-ffn.py --input_file $ffn_input_bin --output_file $output_bin $model_size $layer_number $seqence_length
 ```
 
