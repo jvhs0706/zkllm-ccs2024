@@ -32,7 +32,14 @@ pip install torch torchvision torchaudio transformers datasets
 
 The followings is the example of LLaMa-2. The details for other models may vary.
 
-First, download the models from Hugging Face using `download-models.py`, and generate the public parameters and commit to the models:
+First, download the models ([`meta-llama/Llama-2-7b-hf`](https://huggingface.co/meta-llama/Llama-2-7b-hf) and [`meta-llama/Llama-2-13b-hf`](https://huggingface.co/meta-llama/Llama-2-13b-hf)) from Hugging Face using `download-models.py`. You would need to log in to your Hugging Face account and share your contact information on the model pages to access the models. You would also need a valid [access token](https://huggingface.co/settings/tokens) for your account. Then, run the following commands:
+
+```bash 
+python download-models.py meta-llama/Llama-2-7b-hf replace_this_with_your_access_token
+python download-models.py meta-llama/Llama-2-13b-hf replace_this_with_your_access_token
+```
+
+Then, generate the public parameters and commit to the models:
 
 ```bash
 model_size=7 # 7 or 13 (billions of parameters)
