@@ -485,6 +485,12 @@ pair<FrTensor, FrTensor> tLookupRangeMapping::operator()(const FrTensor& vals)
     return {y, m};   
 }
 
+KERNEL void tlookuprange_pad_m(Fr_t* m_ptr, uint index_padded, uint num_added)
+{
+    if (threadIdx.x == 0 && blockIdx.x == 0)
+        m_ptr[index_padded] = blstrs__scalar__Scalar_add(m_ptr[index_padded], {num_added, 0, 0, 0, 0, 0, 0, 0});
+}
+
 Fr_t tLookupRangeMapping::prove(const FrTensor& S_in, const FrTensor& S_out, const FrTensor& m, 
         const Fr_t& r, const Fr_t& alpha, const Fr_t& beta, 
         const vector<Fr_t>& u, const vector<Fr_t>& v, vector<Polynomial>& proof)
@@ -493,8 +499,18 @@ Fr_t tLookupRangeMapping::prove(const FrTensor& S_in, const FrTensor& S_out, con
     if (m.size != table.size) throw std::runtime_error("m.size != table.size");
     const uint N = m.size;
 
-    if (D != 1 << ceilLog2(D) || N != 1 << ceilLog2(N) || D % N != 0) {
-        throw std::runtime_error("D or N is not power of 2, or D is not divisible by N");
+    if (D != 1 << ceilLog2(D))
+    {
+        auto S_in_ = S_in.pad({D}, table(0));
+        auto S_out_ = S_out.pad({D}, mapped_vals(0));
+        FrTensor m_(m);
+        tlookuprange_pad_m<<<1,1>>>(m_.gpu_data, 0, (1 << ceilLog2(D)) - D);
+        cudaDeviceSynchronize();
+        return prove(S_in_, S_out_, m_, r, alpha, beta, u, v, proof);
+    }
+
+    if (N != 1 << ceilLog2(N) || D % N != 0) {
+        throw std::runtime_error("N is not power of 2, or D is not divisible by N");
     }
 
     FrTensor A(D), B(N);

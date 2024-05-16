@@ -24,6 +24,9 @@ if __name__ == '__main__':
 
     model = AutoModelForCausalLM.from_pretrained(model_card, local_files_only = True, cache_dir = "./model-storage")
     layer = model.model.layers[0]
+    print(dir(layer.self_attn.rotary_emb))
+    print(layer.self_attn.rotary_emb.cos_cached.shape)
+    print(layer.self_attn.rotary_emb.sin_cached.shape)
     embed_dim = layer.self_attn.q_proj.in_features
 
     workdir = f'./zkllm-workdir/Llama-2-{args.model_size}b'
