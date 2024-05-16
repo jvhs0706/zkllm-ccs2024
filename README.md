@@ -50,16 +50,25 @@ python llama-commit.py $model_size 16 # the default scaling factor is (1 << 16).
 Once committed, load your model and input and assemble the proof by recurrently running the followings for all layers:
 
 ```bash
-input_bin=input_file_name.bin # binary format of int32 numpy arrays, see ioutils.cuh, ioutils.cu and fileio_utils.py for details
-self_attn_output_bin=self_attn_output_file_name.bin # binary format of int32 numpy arrays, see ioutils.cuh, ioutils.cu and fileio_utils.py for details
-ffn_input_bin=ffn_input_file_name.bin # binary format of int32 numpy arrays, see ioutils.cuh, ioutils.cu and fileio_utils.py for details
-output_bin=output_file_name.bin # binary format of int32 numpy arrays, see ioutils.cuh, ioutils.cu and fileio_utils.py for details
+input=layer_input.bin
+attn_input=attn_input.bin
+attn_output=attn_output.bin
+post_attn_norm_input=post_attn_norm_input.bin
+ffn_input=ffn_input.bin
+ffn_output=ffn_output.bin
+output=layer_output.bin
+
 model_size=7 # 7 or 13 (billions of parameters)
 layer_number=0 # start with 0 and then go to deeper layers
 sequence_length=2048 # the sequence length to prove
 
-python llama-self-attn.py --input_file $input_bin --output_file $self_attn_output_bin $model_size $layer_number $seqence_length
-python llama-ffn.py --input_file $ffn_input_bin --output_file $output_bin $model_size $layer_number $seqence_length
+python llama-rmsnorm.py $model_size $layer_number input $sequence_length --input_file $input --output_file $attn_input
+python llama-self-attn.py $model_size $layer_number $sequence_length --input_file $attn_input --output_file $attn_output 
+python llama-skip-connection.py --block_input_file $input --block_output_file $attn_output --output_file $post_attn_norm_input
+
+python llama-rmsnorm.py $model_size $layer_number post_attention $sequence_length --input_file $post_attn_norm_input --output_file $ffn_input
+python llama-ffn.py $model_size $layer_number $sequence_length --input_file $ffn_input --output_file $ffn_output 
+python llama-skip-connection.py --block_input $post_attn_norm_input --block_output $ffn_output --output_file $output
 ```
 
 We are actively working on further automating this process.

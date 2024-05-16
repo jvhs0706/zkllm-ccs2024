@@ -75,22 +75,27 @@ int main(int argc, char *argv[])
     auto down_in = swiglu_out * up_out_;
     auto down_in_ = hidden_rescale(down_in);
 
-    swiglu.prove(gate_out__, swiglu_out, swiglu_m, temp_rand[0], temp_rand[1], temp_rand[2], swiglu_u, swiglu_v, swiglu_proof);
-    cout << "SwiGLU proof complete." << endl;
+
 
     auto down_out = down_layer(down_in_);
     auto down_out_ = down_rescale(down_out);
+
+    down_out.save_int(output_file_name);
 
     down_rescale.prove(down_out, down_out_);
     verifyWeightClaim(down_proj, down_layer.prove(down_in_, down_out)[0]);
 
     hidden_rescale.prove(down_in, down_in_);
     gate_pre_swiglu_rescale.prove(gate_out_, gate_out__);
+    swiglu.prove(gate_out__, swiglu_out, swiglu_m, temp_rand[0], temp_rand[1], temp_rand[2], swiglu_u, swiglu_v, swiglu_proof);
+    cout << "SwiGLU proof complete." << endl;
     gate_rescale.prove(gate_out, gate_out_);
     verifyWeightClaim(gate_proj, gate_layer.prove(input, gate_out)[0]);
 
     up_rescale.prove(up_out, up_out_);
     verifyWeightClaim(up_proj, up_layer.prove(input, up_out)[0]);
+
+    
 
 
     return 0;
