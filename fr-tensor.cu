@@ -914,3 +914,11 @@ DEVICE long scalar_to_long(Fr_t x)
     if (!x.val[7] && !x.val[6] && !x.val[5] && !x.val[4] && !x.val[3] && !x.val[2] && !(x.val[1] >> 31)) return static_cast<long>(scalar_to_ulong(x));
     else return -static_cast<long>(scalar_to_ulong(blstrs__scalar__Scalar_sub({0,0,0,0,0,0,0,0}, x)));
 }
+
+FrTensor FrTensor::trunc(uint begin_idx, uint end_idx) const
+{
+    if (begin_idx >= end_idx || end_idx > size) throw std::runtime_error("trunc: invalid indices");
+    FrTensor out(end_idx - begin_idx);
+    cudaMemcpy(out.gpu_data, gpu_data + begin_idx, out.size * sizeof(Fr_t), cudaMemcpyDeviceToDevice);
+    return out;
+}

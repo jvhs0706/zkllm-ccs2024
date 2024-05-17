@@ -68,7 +68,7 @@ python llama-skip-connection.py --block_input_file $input --block_output_file $a
 
 python llama-rmsnorm.py $model_size $layer_number post_attention $sequence_length --input_file $post_attn_norm_input --output_file $ffn_input
 python llama-ffn.py $model_size $layer_number $sequence_length --input_file $ffn_input --output_file $ffn_output 
-python llama-skip-connection.py --block_input $post_attn_norm_input --block_output $ffn_output --output_file $output
+python llama-skip-connection.py --block_input_file $post_attn_norm_input --block_output_file $ffn_output --output_file $output
 ```
 
 We are actively working on further automating this process.

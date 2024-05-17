@@ -6,7 +6,7 @@ import numpy as np
 parser = argparse.ArgumentParser(description='LLaMa-2 Skip Connection')
 parser.add_argument('--block_input_file', required = True, type=str, help='Input of the block.')
 parser.add_argument('--block_output_file', required = True, type=str, help='Output of the block.')
-parser.add_argument('--output_file', default = 'llama-rmsnorm-output.bin', type=str, help='Output of the skip connection.')
+parser.add_argument('--output_file', required = True, type=str, help='Output of the skip connection.')
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import fileio_utils
