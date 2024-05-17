@@ -6,7 +6,7 @@ Welcome to the official CUDA implementation of the paper *zkLLM: Zero Knowledge 
 
 ## Updates
 
-- **[2023-05-17]** Implemented enhancements to align the open-sourced version with both the original, pre-refinement codebase and the original LLaMa-2 model.
+- **[2024-05-17]** Implemented enhancements to align the open-sourced version with both the original, pre-refinement codebase and the original LLaMa-2 model.
 
 ## Open-Sourcing Progress
 
