@@ -1,8 +1,12 @@
 # zkLLM: Zero Knowledge Proofs for Large Language Models
 
-Welcome to the official CUDA implementation of the paper *zkLLM: Zero Knowledge Proofs for Large Language Models* accepted to [ACM CCS 2024](https://www.sigsac.org/ccs/CCS2024/home.html), authored by [Haochen Sun](https://cs.uwaterloo.ca/~h299sun/), Jason Li, and [Hongyang Zhang](https://hongyanz.github.io/) from the University of Waterloo. The long version of the paper is [available on arXiv](https://arxiv.org/abs/2404.16109).
+Welcome to the official CUDA implementation of the paper *zkLLM: Zero Knowledge Proofs for Large Language Models* ([preprint](https://arxiv.org/abs/2404.16109)) accepted to [ACM CCS 2024](https://www.sigsac.org/ccs/CCS2024/home.html), authored by [Haochen Sun](https://cs.uwaterloo.ca/~h299sun/), Jason Li, and [Hongyang Zhang](https://hongyanz.github.io/) from the University of Waterloo. The long version of the paper is [available on arXiv](https://arxiv.org/abs/2404.16109).
 
 **Warning:** This repository has NOT undergone security auditing and is NOT ready for industrial applications.
+
+## Updates
+
+- **[2023-05-17]** Implemented enhancements to align the open-sourced version with both the original, pre-refinement codebase and the original LLaMa-2 model.
 
 ## Open-Sourcing Progress
 
@@ -77,7 +81,7 @@ You may need to manually set the CUDA architecture used. For example, if you are
 
 ## Contacts
 
-For any questions, comments, or discussions regarding potential collaborations (e.g., further development of the codebase for industrial-level applications), please feel free to [email](mailto:haochen.sun@uwaterloo.ca) Haochen Sun.
+For any questions, comments, or discussions regarding potential collaborations (e.g., further development of the codebase for industrial-level applications), please feel free to [contact Haochen Sun](https://cs.uwaterloo.ca/~h299sun/#contact).
 
 
 ## Acknowledgements
