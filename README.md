@@ -36,11 +36,12 @@ pip install torch torchvision torchaudio transformers datasets
 
 The followings is the example of LLaMa-2. The details for other models may vary.
 
-First, download the models ([`meta-llama/Llama-2-7b-hf`](https://huggingface.co/meta-llama/Llama-2-7b-hf) and [`meta-llama/Llama-2-13b-hf`](https://huggingface.co/meta-llama/Llama-2-13b-hf)) from Hugging Face using `download-models.py`. You would need to log in to your Hugging Face account and share your contact information on the model pages to access the models. You would also need a valid [access token](https://huggingface.co/settings/tokens) for your account. Then, run the following commands:
+First, download the models ([`meta-llama/Llama-2-7b-hf`](https://huggingface.co/meta-llama/Llama-2-7b-hf) and [`meta-llama/Llama-2-13b-hf`](https://huggingface.co/meta-llama/Llama-2-13b-hf)) from Hugging Face using `download-models.py`. You would need to log in to your Hugging Face account and share your contact information on the model pages to access the models. You would also need a valid access token for your account, which should be on [this webpage](https://huggingface.co/settings/tokens) if you already have one, or can be generated from the same page by pressing the `New Token` button (please input any name you like in the `Name` field, and choose `Read` in the `Type` field). Your token should look like this: `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` (note that this token has been deactivated, and cannot be used). Then, run the following commands:
 
 ```bash 
-python download-models.py meta-llama/Llama-2-7b-hf replace_this_with_your_access_token
-python download-models.py meta-llama/Llama-2-13b-hf replace_this_with_your_access_token
+# replace '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' with your own token
+python download-models.py meta-llama/Llama-2-7b-hf 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
+python download-models.py meta-llama/Llama-2-13b-hf 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
 ```
 
 Then, generate the public parameters and commit to the models:
@@ -50,6 +51,8 @@ model_size=7 # 7 or 13 (billions of parameters)
 python llama-ppgen.py $model_size
 python llama-commit.py $model_size 16 # the default scaling factor is (1 << 16). Others have not been tested.
 ```
+
+Here, `llama-ppgen.py` generates the public parameters used in the commitment scheme. Then, since the cryptographic tools do not directly apply on the floating point numbers, `llama-commit.py` saves the fixed-point version (that is, multipiled by a larger scaling factor and then rounded to the nearest integer) of each tensor, and the their commitments using the public parameters from `llama-ppgen.py`.
 
 Once committed, load your model and input and assemble the proof by recurrently running the followings for all layers:
 
