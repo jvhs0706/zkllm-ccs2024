@@ -8,7 +8,10 @@ parser.add_argument('--log_off_factor', type=int, default=5, help='The log offse
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 if __name__ == '__main__':
-    os.system('make ppgen')
+    compilation_error = os.system('make ppgen')
+    if compilation_error:
+        print("Error compiling ppgen")
+        exit(1)
     args = parser.parse_args()
     model_card = f"meta-llama/Llama-2-{args.model_size}b-hf"
     tokenizer = AutoTokenizer.from_pretrained(model_card, local_files_only = True, cache_dir = "./model-storage")
