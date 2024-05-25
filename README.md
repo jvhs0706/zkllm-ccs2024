@@ -2,8 +2,6 @@
 
 Welcome to the official CUDA implementation of the paper *zkLLM: Zero Knowledge Proofs for Large Language Models* accepted to [ACM CCS 2024](https://www.sigsac.org/ccs/CCS2024/home.html), authored by [Haochen Sun](https://cs.uwaterloo.ca/~h299sun/), Jason Li, and [Hongyang Zhang](https://hongyanz.github.io/) from the University of Waterloo. The long version of the paper is [available on arXiv](https://arxiv.org/abs/2404.16109).
 
-**Warning:** This repository has NOT undergone security auditing and is NOT ready for industrial applications.
-
 ## Updates
 
 - **[2024-05-17]** Implemented enhancements to align the open-sourced version with both the original, pre-refinement codebase and the original LLaMa-2 model.
@@ -15,6 +13,10 @@ Our open-sourcing process includes:
 - [x] Implementation of `tlookup` and `zkAttn`, two major technical components of *zkLLM*.
 - [x] The proof of all components of the entire inference process.
 - [ ] Work in progress: Fully automated verifiable inference pipeline for LLMs.
+
+## Disclaimers
+
+This repository has NOT undergone security auditing and is NOT ready for industrial applications. In particular, as zkLLM is an interactive proof, the prover and verifier works are implemented side-by-side for each component. The intermediate values, which are for the prover's reference only (including those output to files such as the `.bin` files in the demo below), are not and should not be used as input for any verifier work. For industrial applications, it is necessary to separate the executions between the prover and the verifier, and ideally utilize the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic) to make the proof non-interactive. This would require a systematic re-design of the entire system. Please [contact Haochen Sun](#Contacts) if you have any ideas on this matter.
 
 ## Requirements and Setup
 
@@ -54,7 +56,7 @@ python llama-commit.py $model_size 16 # the default scaling factor is (1 << 16).
 
 Here, `llama-ppgen.py` generates the public parameters used in the commitment scheme. Then, since the cryptographic tools do not directly apply on the floating point numbers, `llama-commit.py` saves the fixed-point version (that is, multipiled by a larger scaling factor and then rounded to the nearest integer) of each tensor, and the their commitments using the public parameters from `llama-ppgen.py`.
 
-Once committed, load your model and input and assemble the proof by recurrently running the followings for all layers:
+Once committed, load your model and input and assemble the proof by recurrently running the followings for all layers.
 
 ```bash
 input=layer_input.bin
@@ -78,9 +80,9 @@ python llama-ffn.py $model_size $layer_number $sequence_length --input_file $ffn
 python llama-skip-connection.py --block_input_file $post_attn_norm_input --block_output_file $ffn_output --output_file $output
 ```
 
-We are actively working on further automating this process.
+For understanding the format of `.bin` files that store tensors in fixed-point formats (i.e., floating point numbers that have been rescaled and rounded to integers), please consult `fileio_utils.py`.
 
-You may need to manually set the CUDA architecture used. For example, if you are using an NVIDIA RTX A6000, set `ARCH` to `sm_86` in `Makefile`. Modify the `Makefile` if necessary.
+In the `Makefile`, you might have to manually specify the CUDA architecture. For instance, for an NVIDIA RTX A6000, you should assign `sm_86` to `ARCH`.
 
 ## Contacts
 
