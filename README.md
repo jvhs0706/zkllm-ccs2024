@@ -36,9 +36,9 @@ pip install torch torchvision torchaudio transformers datasets
 
 ## An Example with LLaMa-2
 
-The followings is the example of LLaMa-2. The details for other models may vary.
+The following is an example for LLaMa-2. Please note that the details for other models may vary.
 
-First, download the models ([`meta-llama/Llama-2-7b-hf`](https://huggingface.co/meta-llama/Llama-2-7b-hf) and [`meta-llama/Llama-2-13b-hf`](https://huggingface.co/meta-llama/Llama-2-13b-hf)) from Hugging Face using `download-models.py`. You would need to log in to your Hugging Face account and share your contact information on the model pages to access the models. You would also need a valid access token for your account, which should be on [this webpage](https://huggingface.co/settings/tokens) if you already have one, or can be generated from the same page by pressing the `New Token` button (please input any name you like in the `Name` field, and choose `Read` in the `Type` field). Your token should look like this: `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` (note that this token has been deactivated, and cannot be used). Then, run the following commands:
+First, download the models ([`meta-llama/Llama-2-7b-hf`](https://huggingface.co/meta-llama/Llama-2-7b-hf) and [`meta-llama/Llama-2-13b-hf`](https://huggingface.co/meta-llama/Llama-2-13b-hf)) from Hugging Face using `download-models.py`. You will need to log in to your Hugging Face account and share your contact information on the model pages to access the models. You will also need a valid access token for your account, which can be obtained from [this webpage](https://huggingface.co/settings/tokens) by generating a new token. Make sure to choose `Read` as the token type. Your token should look like this: `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` (note that this token has been deactivated and cannot be used). Then, run the following commands:
 
 ```bash 
 # replace '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' with your own token
@@ -46,7 +46,7 @@ python download-models.py meta-llama/Llama-2-7b-hf hf_gGzzqKiEwQvSjCPphzpTFOxNBb
 python download-models.py meta-llama/Llama-2-13b-hf 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
 ```
 
-Then, generate the public parameters and commit to the models:
+Then, generate the public parameters and commit to the model parameters:
 
 ```bash
 model_size=7 # 7 or 13 (billions of parameters)
