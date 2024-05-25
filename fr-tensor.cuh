@@ -146,6 +146,10 @@ class FrTensor
     FrTensor pad(const vector<uint>& shape, const Fr_t& pad_val = {0, 0, 0, 0, 0, 0, 0, 0}) const;
 
     FrTensor transpose(uint M, uint N) const;
+    
+    // moved from rotary embedding part to the wheel. This may be used in future applications of the wheel!
+    FrTensor trunc(uint begin_idx, uint end_idx) const;
+
     static FrTensor matmul(const FrTensor& x, const FrTensor& y, uint M, uint N, uint P);
 
     static FrTensor random_int(uint size, uint num_bits);

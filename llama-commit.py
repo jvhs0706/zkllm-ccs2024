@@ -16,7 +16,10 @@ def save_weight_int(int_weight: torch.Tensor, path):
 
 
 if __name__ == '__main__':
-    os.system('make commit-param')
+    compilation_error = os.system('make commit-param')
+    if compilation_error:
+        print("Error compiling commit-param")
+        exit(1)
     args = parser.parse_args()
     model_card = f"meta-llama/Llama-2-{args.model_size}b-hf"
     scaling_factor = 1 << args.log_scaling_factor

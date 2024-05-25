@@ -6,10 +6,6 @@
 #include "rescaling.cuh"
 #include <string>
 
-FrTensor computeHiddenIn(const FrTensor& up_out, const FrTensor& gate_out, vector<FrTensor>& cache);
-
-void proveHiddenIn(const FrTensor& up_out, const FrTensor& gate_out, const FrTensor& hidden_in, vector<FrTensor>& cache);
-
 int main(int argc, char *argv[])
 {
 
@@ -50,9 +46,13 @@ int main(int argc, char *argv[])
     zkFC down_layer(hidden_dim, embed_dim, down_proj.weight);
 
     Rescaling up_rescale(1 << 16);
-    Rescaling gate_rescale(1 << 16);
+    Rescaling gate_rescale(1 << 12);
+    Rescaling gate_pre_swiglu_rescale(1 << 12);
     Rescaling hidden_rescale(1 << 16);
     Rescaling down_rescale(1 << 16);
+
+    FrTensor swiglu_values = FrTensor::from_int_bin("swiglu-table.bin");
+    tLookupRangeMapping swiglu(-(1 << 19), 1 << 20, swiglu_values);
 
     FrTensor input = FrTensor::from_int_bin(input_file_name);
     auto up_out = up_layer(input);
@@ -61,37 +61,42 @@ int main(int argc, char *argv[])
 
     auto gate_out = gate_layer(input);
     auto gate_out_ = gate_rescale(gate_out);
+    auto gate_out__ = gate_pre_swiglu_rescale(gate_out_);
+    auto p = swiglu(gate_out__);
 
-    vector<FrTensor> hidden_in_cache;
-    auto down_in = computeHiddenIn(up_out_, gate_out_, hidden_in_cache);
+    auto &swiglu_out = p.first, &swiglu_m = p.second;
+
+    auto temp_rand = random_vec(3);
+    auto swiglu_u = random_vec(ceilLog2(seq_len * hidden_dim));
+    auto swiglu_v = random_vec(ceilLog2(seq_len * hidden_dim));
+    vector<Polynomial> swiglu_proof;
+    
+
+    auto down_in = swiglu_out * up_out_;
     auto down_in_ = hidden_rescale(down_in);
+
+
 
     auto down_out = down_layer(down_in_);
     auto down_out_ = down_rescale(down_out);
+
+    down_out.save_int(output_file_name);
 
     down_rescale.prove(down_out, down_out_);
     verifyWeightClaim(down_proj, down_layer.prove(down_in_, down_out)[0]);
 
     hidden_rescale.prove(down_in, down_in_);
-    proveHiddenIn(up_out, gate_out, down_in, hidden_in_cache);
-    
+    gate_pre_swiglu_rescale.prove(gate_out_, gate_out__);
+    swiglu.prove(gate_out__, swiglu_out, swiglu_m, temp_rand[0], temp_rand[1], temp_rand[2], swiglu_u, swiglu_v, swiglu_proof);
+    cout << "SwiGLU proof complete." << endl;
     gate_rescale.prove(gate_out, gate_out_);
     verifyWeightClaim(gate_proj, gate_layer.prove(input, gate_out)[0]);
 
     up_rescale.prove(up_out, up_out_);
     verifyWeightClaim(up_proj, up_layer.prove(input, up_out)[0]);
 
+    
+
 
     return 0;
-}
-
-FrTensor computeHiddenIn(const FrTensor& up_out, const FrTensor& gate_out, vector<FrTensor>& cache)
-{
-    // specific for differnet LLMs; change this function to fit the model
-    return up_out * gate_out;
-}
-
-void proveHiddenIn(const FrTensor& up_out, const FrTensor& gate_out, const FrTensor& hidden_in, vector<FrTensor>& cache)
-{
-    // specific for differnet LLMs; change this function to fit the model
 }

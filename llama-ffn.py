@@ -13,8 +13,18 @@ parser.add_argument('--output_file', default = 'llama-ffn-output.bin', type=str,
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import fileio_utils
 
+def prepare_swiglu(in_range_num_bit = 12, in_prec_num_bit = 8, out_prec_num_bit = 16):
+    print('WARNING: the cleaned-up version may be running the preparation of swiglu multiple times which is not necessary.')
+    print('This is because the code has been completed refactorized and remodularized. Reach out to me if you have a better design.')
+    Xs = torch.arange(- (1 << (in_range_num_bit - 1)), 1 << (in_range_num_bit - 1), step = 1 / (1 << in_prec_num_bit), device = 0)
+    Ys = Xs * torch.sigmoid(Xs)
+    fileio_utils.save_int(Ys, out_prec_num_bit, 'swiglu-table.bin')
+
+
 
 if __name__ == '__main__':
+    prepare_swiglu()
+
     compilation_error = os.system('make ffn')
     if compilation_error:
         print("Error compiling ffn")
@@ -33,4 +43,7 @@ if __name__ == '__main__':
         fileio_utils.save_int(torch.randn(args.seq_len, embed_dim, device = 0), 1 << 16, args.input_file)
     
     os.system(f'./ffn {args.input_file} {args.seq_len} {embed_dim} {hidden_dim} {workdir} {layer_prefix} {args.output_file}')
+
+    # remove the swiglu-table.bin file to avoid conflicts
+    os.remove('swiglu-table.bin')
 
