@@ -13,9 +13,7 @@ parser.add_argument('--output_file', default = 'llama-ffn-output.bin', type=str,
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import fileio_utils
 
-def prepare_swiglu(in_range_num_bit = 12, in_prec_num_bit = 8, out_prec_num_bit = 16):
-    print('WARNING: the cleaned-up version may be running the preparation of swiglu multiple times which is not necessary.')
-    print('This is because the code has been completed refactorized and remodularized. Reach out to me if you have a better design.')
+def prepare_swiglu(in_range_num_bit = 10, in_prec_num_bit = 12, out_prec_num_bit = 16):
     Xs = torch.arange(- (1 << (in_range_num_bit - 1)), 1 << (in_range_num_bit - 1), step = 1 / (1 << in_prec_num_bit), device = 0)
     Ys = Xs * torch.sigmoid(Xs)
     fileio_utils.save_int(Ys, out_prec_num_bit, 'swiglu-table.bin')

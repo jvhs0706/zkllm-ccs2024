@@ -46,13 +46,12 @@ int main(int argc, char *argv[])
     zkFC down_layer(hidden_dim, embed_dim, down_proj.weight);
 
     Rescaling up_rescale(1 << 16);
-    Rescaling gate_rescale(1 << 12);
-    Rescaling gate_pre_swiglu_rescale(1 << 12);
+    Rescaling gate_rescale(1 << 20);
     Rescaling hidden_rescale(1 << 16);
     Rescaling down_rescale(1 << 16);
 
     FrTensor swiglu_values = FrTensor::from_int_bin("swiglu-table.bin");
-    tLookupRangeMapping swiglu(-(1 << 19), 1 << 20, swiglu_values);
+    tLookupRangeMapping swiglu(-(1 << 21), 1 << 22, swiglu_values);
 
     FrTensor input = FrTensor::from_int_bin(input_file_name);
     auto up_out = up_layer(input);
@@ -61,8 +60,7 @@ int main(int argc, char *argv[])
 
     auto gate_out = gate_layer(input);
     auto gate_out_ = gate_rescale(gate_out);
-    auto gate_out__ = gate_pre_swiglu_rescale(gate_out_);
-    auto p = swiglu(gate_out__);
+    auto p = swiglu(gate_out_);
 
     auto &swiglu_out = p.first, &swiglu_m = p.second;
 
@@ -86,8 +84,7 @@ int main(int argc, char *argv[])
     verifyWeightClaim(down_proj, down_layer.prove(down_in_, down_out)[0]);
 
     hidden_rescale.prove(down_in, down_in_);
-    gate_pre_swiglu_rescale.prove(gate_out_, gate_out__);
-    swiglu.prove(gate_out__, swiglu_out, swiglu_m, temp_rand[0], temp_rand[1], temp_rand[2], swiglu_u, swiglu_v, swiglu_proof);
+    swiglu.prove(gate_out_, swiglu_out, swiglu_m, temp_rand[0], temp_rand[1], temp_rand[2], swiglu_u, swiglu_v, swiglu_proof);
     cout << "SwiGLU proof complete." << endl;
     gate_rescale.prove(gate_out, gate_out_);
     verifyWeightClaim(gate_proj, gate_layer.prove(input, gate_out)[0]);

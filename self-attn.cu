@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
         K_.save_int("temp_K.bin");
         V_.save_int("temp_V.bin");
 
+        cout << "QKV linear proof successfully verified!" << endl;
+
         return 0;
     }
 
@@ -103,7 +105,7 @@ int main(int argc, char *argv[])
         auto out__ = rs2(out_);
         auto out___ = rs1(out__);
 
-        out__.save_int("temp_head_out.bin");
+        out___.save_int("temp_head_out.bin");
 
         rs1.prove(out__, out___);
         rs2.prove(out_, out__);
@@ -129,6 +131,26 @@ int main(int argc, char *argv[])
 
     else if (mode == "o_linear")
     {
+        auto o_proj = create_weight(
+            workdir + "/self_attn.o_proj.weight-pp.bin",
+            workdir + "/" + layer_prefix + "-self_attn.o_proj.weight-int.bin",
+            workdir + "/" + layer_prefix + "-self_attn.o_proj.weight-commitment.bin",
+            embed_dim,
+            embed_dim
+        );
+        auto attn_out = FrTensor::from_int_bin("temp_attn_out.bin");
+        zkFC o_layer(embed_dim, embed_dim, o_proj.weight);
+        Rescaling o_rescale(1 << 16);
+        
+        auto O = o_layer(attn_out);
+        auto O_ = o_rescale(O);
+        O_.save_int(output_file_name);
+
+        o_rescale.prove(O, O_);
+        verifyWeightClaim(o_proj, o_layer.prove(attn_out, O)[0]);
+        cout << "Output linear proof successfully verified!" << endl;
+        return 0;
+
 
     }
 
