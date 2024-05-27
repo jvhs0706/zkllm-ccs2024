@@ -200,6 +200,23 @@ void FrTensor::save_int(const string& filename) const
     cudaFree(int_gpu_data);
 }
 
+KERNEL void scalar_to_long_kernel(const Fr_t* scalar_ptr, long* long_ptr, uint n)
+{
+    const uint gid = GET_GLOBAL_ID();
+    if (gid >= n) return;
+    long_ptr[gid] = scalar_to_long(scalar_ptr[gid]);
+}
+
+void FrTensor::save_long(const string& filename) const
+{
+    long* long_gpu_data;
+    cudaMalloc((void **)&long_gpu_data, sizeof(long) * size);
+    scalar_to_long_kernel<<<(size+FrNumThread-1)/FrNumThread,FrNumThread>>>(gpu_data, long_gpu_data, size);
+    cudaDeviceSynchronize();
+    savebin(filename, long_gpu_data, sizeof(long) * size);
+    cudaFree(long_gpu_data);
+}
+
 FrTensor::FrTensor(const string& filename): size(findsize(filename) / sizeof(Fr_t)), gpu_data(nullptr)
 {
     cudaMalloc((void **)&gpu_data, sizeof(Fr_t) * size);
@@ -215,6 +232,18 @@ FrTensor FrTensor::from_int_bin(const string& filename)
     loadbin(filename, int_gpu_data, sizeof(int) * size);
     int_to_scalar_kernel<<<(size+FrNumThread-1)/FrNumThread,FrNumThread>>>(int_gpu_data, out.gpu_data, size);
     cudaFree(int_gpu_data);
+    return out;
+}
+
+FrTensor FrTensor::from_long_bin(const string& filename)
+{
+    auto size = findsize(filename) / sizeof(long);
+    FrTensor out(size);
+    long* long_gpu_data;
+    cudaMalloc((void **)&long_gpu_data, sizeof(int) * size);
+    loadbin(filename, long_gpu_data, sizeof(int) * size);
+    long_to_scalar_kernel<<<(size+FrNumThread-1)/FrNumThread,FrNumThread>>>(long_gpu_data, out.gpu_data, size);
+    cudaFree(long_gpu_data);
     return out;
 }
 

@@ -90,11 +90,15 @@ class FrTensor
 
     static FrTensor from_int_bin(const string& filename);
 
+    static FrTensor from_long_bin(const string& filename);
+
     ~FrTensor();
 
     void save(const string& filename) const;
 
     void save_int(const string& filename) const;
+
+    void save_long(const string& filename) const;
 
     Fr_t operator()(uint idx) const;
 
