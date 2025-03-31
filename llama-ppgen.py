@@ -1,9 +1,9 @@
-import os, sys
+import os
 import argparse
 
 parser = argparse.ArgumentParser(description='LLaMa-2 PPGen')
-parser.add_argument('model_size', type=int, choices = [7, 13], help='The size of the model to use. Default is 13')
-parser.add_argument('--log_off_factor', type=int, default=5, help='The log offset factor to use. Default is 5')
+parser.add_argument('--model-path', type=str, help='The path to the model to use.')
+parser.add_argument('--log-off-factor', type=int, default=5, help='The log offset factor to use. Default is 5')
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -13,19 +13,18 @@ if __name__ == '__main__':
         print("Error compiling ppgen")
         exit(1)
     args = parser.parse_args()
-    model_card = f"meta-llama/Llama-2-{args.model_size}b-hf"
-    tokenizer = AutoTokenizer.from_pretrained(model_card, local_files_only = True, cache_dir = "./model-storage")
-    model = AutoModelForCausalLM.from_pretrained(model_card, local_files_only = True, cache_dir = "./model-storage")
+    tokenizer = AutoTokenizer.from_pretrained(args.model_path, local_files_only = True, cache_dir = "./model-storage")
+    model = AutoModelForCausalLM.from_pretrained(args.model_path, local_files_only = True, cache_dir = "./model-storage")
 
-    os.makedirs(f"./zkllm-workdir/Llama-2-{args.model_size}b", exist_ok = True)
+    os.makedirs(f"./zkllm-workdir/{args.model_path.replace('/', '--')}", exist_ok = True)
 
-    for (i, w) in model.model.layers[0].named_parameters():
+    for (key, w) in model.model.layers[0].named_parameters():
         if len(w.shape) == 2:
             pp_size = w.shape[0]
             pp_size <<= args.log_off_factor
         elif len(w.shape) == 1:
             (pp_size,) = w.shape
         else:
-            raise ValueError(f"Unexpected shape {w.shape} for parameter {i}")
-        
-        os.system(f'./ppgen {pp_size} ./zkllm-workdir/Llama-2-{args.model_size}b/{i}-pp.bin')
+            raise ValueError(f"Unexpected shape {w.shape} for parameter {key}")
+        print(f"Generating PP for {key} with size {pp_size}")
+        os.system(f"./ppgen {pp_size} ./zkllm-workdir/{args.model_path.replace('/', '--')}/{key}-pp.bin")
