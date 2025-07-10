@@ -4,14 +4,6 @@ Welcome to the official CUDA implementation of the paper *zkLLM: Zero Knowledge 
 
 *Issues are currently disabled due to bots that get triggered by issue activity to post suspicious content and send Haochen disturbing emails. Please [contact Haochen otherwise](#contacts).*
 
-## Open-Sourcing Progress
-
-Our open-sourcing process includes:
-- [x] The wheel of tensors over the `BLS12-381` elliptic curve.
-- [x] Implementation of `tlookup` and `zkAttn`, two major technical components of *zkLLM*.
-- [x] The proof of the entire inference process.
-- [ ] Improve and merge with the [benchmarking code](https://github.com/jvhs0706/zkllm-benchmark) to make reproduction easier.
-
 ## Disclaimers
 
 This repository has NOT undergone security auditing and is NOT ready for industrial applications. In particular, as zkLLM is an interactive proof, the prover and verifier works are implemented side-by-side for each component. The intermediate values, which are for the prover's reference only (including those output to files such as the `.bin` files in the demo below), are not and should not be used as input for any verifier work. For industrial applications, it is necessary to separate the executions between the prover and the verifier, and ideally utilize the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic) to make the proof non-interactive. This would require a systematic re-design of the entire system.
