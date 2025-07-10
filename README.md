@@ -2,9 +2,7 @@
 
 Welcome to the official CUDA implementation of the paper *zkLLM: Zero Knowledge Proofs for Large Language Models* accepted to [ACM CCS 2024](https://www.sigsac.org/ccs/CCS2024/home.html), authored by [Haochen Sun](https://cs.uwaterloo.ca/~h299sun/), Jason Li, and [Hongyang Zhang](https://hongyanz.github.io/) from the University of Waterloo. The long version of the paper is [available on arXiv](https://arxiv.org/abs/2404.16109).
 
-**UPDATE (04 JA 2025):** Please see [this repository](https://github.com/jvhs0706/zkllm-benchmark) (still under construction) regarding the reproduction of overhead, as well as the (negligible) drop of accuracy. 
-
-*Issues are currently disabled due to bots that get triggered by issues to post suspicious information and send Haochen disturbing emails. Please [contact Haochen otherwise](https://cs.uwaterloo.ca/~h299sun/#contact).*
+*Issues are currently disabled due to bots that get triggered by issue activity to post suspicious content and send Haochen disturbing emails. Please [contact Haochen otherwise](#contacts).*
 
 ## Open-Sourcing Progress
 
@@ -93,11 +91,11 @@ Note that the optimization by utilizing the repetitive pattern of the structures
 
 ## Contacts
 
+⚠️ **Notice:** I am no longer working on zero-knowledge deep learning, and this project is no longer actively maintained. I have decided to pursue other directions for my PhD thesis. For background and technical details, please refer to the original paper. This [repository](https://github.com/jvhs0706/zkllm-benchmark) may also help reproduce the overhead and the (negligible) drop in accuracy. In addition, several excellent industrial projects on zero-knowledge deep learning have emerged since mid-to-late 2024, which may serve as more up-to-date references. Due to limited time and the time elapsed since the publication, I am unable to provide continued support for this repository. Many technical details are no longer fresh in my memory, which makes it infeasible to explain individual lines of code or help debug external issues. This repository depends on old versions of packages (e.g., `transformers`) and hard-coded outdated LLMs, and there is currently no plan for upgrades or maintenance. Thank you for your understanding. For more information, see this [project page](https://cs.uwaterloo.ca/~h299sun/project/zkdl/).
+
 [Contact Haochen Sun for Questions and Comments](https://cs.uwaterloo.ca/~h299sun/#contact)
 
 [Message for the Web3/Blockchain Community](https://cs.uwaterloo.ca/~h299sun/publication/ccs2024-zkllm/web3.html)
-
-**Note:** Haochen is no longer working on zero-knowledge deep learning. See this [post](https://cs.uwaterloo.ca/~h299sun/project/zkdl/) for details.
 
 ## Acknowledgements
 
